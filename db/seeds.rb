@@ -10,3 +10,13 @@
   plan = Plan.find_or_initialize_by(slug: attributes[:slug])
   plan.update!(attributes)
 end
+
+# Categorias padrão do sistema (spec §2.3)
+[
+  "Wi-Fi", "Check-in/Check-out", "Como chegar", "Regras da casa", "Manual da casa",
+  "Telefones úteis", "Emergências", "Restaurantes", "Mercados e farmácias",
+  "Passeios e atrações", "Transporte"
+].each_with_index do |name, index|
+  category = Category.standard.find_or_initialize_by(name: name)
+  category.update!(position: index + 1)
+end
