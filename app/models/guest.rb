@@ -1,5 +1,6 @@
 class Guest < ApplicationRecord
   belongs_to :host
+  has_many :bookings, dependent: :destroy
 
   encrypts :cpf, deterministic: true
   encrypts :phone

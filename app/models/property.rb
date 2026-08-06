@@ -2,6 +2,7 @@ class Property < ApplicationRecord
   belongs_to :host
   has_one_attached :cover_photo
   has_many :cards, dependent: :destroy
+  has_many :bookings, dependent: :destroy
 
   validates :name, :address, presence: true
   validate :within_plan_limit, on: :create
