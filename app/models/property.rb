@@ -14,12 +14,12 @@ class Property < ApplicationRecord
 
   def guide_progress
     categories = Category.available_to(host)
-    filled = cards.filter(&:filled?).count { |card| categories.include?(card.category) }
+    filled = cards.includes(:category, :rich_text_description).filter(&:filled?).count { |card| categories.include?(card.category) }
     { filled: filled, total: categories.size }
   end
 
   def visible_cards
-    cards.by_position.reject(&:hidden?).select(&:filled?)
+    cards.by_position.includes(:category, :rich_text_description).reject(&:hidden?).select(&:filled?)
   end
 
   private
