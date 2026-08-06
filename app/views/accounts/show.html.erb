@@ -1,0 +1,33 @@
+<h1 class="mb-6 text-2xl font-bold">Minha conta</h1>
+
+<% if @subscription %>
+  <div class="mb-6 rounded-lg border border-gray-200 bg-white p-4">
+    <h2 class="mb-2 font-semibold text-gray-900">Plano <%= @subscription.plan.name %></h2>
+    <p class="text-sm text-gray-600">
+      Status: <%= subscription_status_label(@subscription) %>
+      <% if @subscription.trial? %>
+        — <%= @subscription.trial_days_left %> dias restantes
+      <% end %>
+    </p>
+  </div>
+<% end %>
+
+<%= form_with model: @host, url: account_path, method: :patch, class: "max-w-lg space-y-5" do |f| %>
+  <%= render "shared/form_errors", record: @host %>
+  <div>
+    <%= f.label :name, class: "block text-sm font-medium text-gray-700" %>
+    <%= f.text_field :name, required: true, autofocus: true,
+          class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none sm:text-sm" %>
+  </div>
+  <div>
+    <%= f.label :email_address, class: "block text-sm font-medium text-gray-700" %>
+    <%= f.email_field :email_address, required: true, autocomplete: "username",
+          class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none sm:text-sm" %>
+  </div>
+  <div>
+    <%= f.label :phone, class: "block text-sm font-medium text-gray-700" %>
+    <%= f.telephone_field :phone, required: true, placeholder: "(11) 98765-4321",
+          class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none sm:text-sm" %>
+  </div>
+  <%= f.submit "Salvar", class: "rounded-lg bg-gray-900 px-4 py-2.5 font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 active:bg-gray-950" %>
+<% end %>

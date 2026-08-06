@@ -19,6 +19,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resource :account, only: %i[show update]
+
   get "g/:token", to: "public_guides#show", as: :public_guide
 
   root "properties#index"
