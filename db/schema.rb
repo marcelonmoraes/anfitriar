@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_06_173539) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_06_174513) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -51,6 +51,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_173539) do
     t.index ["host_id", "name"], name: "index_categories_on_host_id_and_name_unique", unique: true, where: "(host_id IS NOT NULL)"
     t.index ["host_id"], name: "index_categories_on_host_id"
     t.index ["name"], name: "index_categories_on_name_standard_unique", unique: true, where: "(host_id IS NULL)"
+  end
+
+  create_table "guests", force: :cascade do |t|
+    t.string "cpf", null: false
+    t.datetime "created_at", null: false
+    t.string "email"
+    t.bigint "host_id", null: false
+    t.string "name", null: false
+    t.string "phone", null: false
+    t.datetime "updated_at", null: false
+    t.index ["host_id", "cpf"], name: "index_guests_on_host_id_and_cpf", unique: true
+    t.index ["host_id"], name: "index_guests_on_host_id"
   end
 
   create_table "hosts", force: :cascade do |t|
@@ -117,6 +129,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_173539) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "categories", "hosts"
+  add_foreign_key "guests", "hosts"
   add_foreign_key "properties", "hosts"
   add_foreign_key "sessions", "hosts"
   add_foreign_key "subscriptions", "hosts"

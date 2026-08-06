@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   resource :registration, only: %i[new create]
   resources :passwords, param: :token, only: %i[new create edit update]
   resources :properties
+  resources :guests, except: %i[show]
 
   root "properties#index"
 

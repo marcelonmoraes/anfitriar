@@ -4,6 +4,7 @@ class Host < ApplicationRecord
   has_one :subscription, dependent: :destroy
   has_many :categories, dependent: :destroy
   has_many :properties, dependent: :destroy
+  has_many :guests, dependent: :destroy
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
   normalizes :phone, with: ->(p) { p.gsub(/\D/, "") }
