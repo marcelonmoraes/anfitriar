@@ -23,7 +23,7 @@ class PasswordsController < ApplicationController
       @host.sessions.destroy_all
       redirect_to new_session_path, notice: "Senha redefinida. Faça login com a nova senha."
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 

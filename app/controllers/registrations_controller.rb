@@ -16,7 +16,7 @@ class RegistrationsController < ApplicationController
       redirect_to root_path,
                   notice: "Bem-vindo ao Anfitriar! Seu período de teste de #{PlatformConfiguration.current.trial_days} dias começou."
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 

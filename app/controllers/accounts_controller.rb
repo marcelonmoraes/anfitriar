@@ -10,7 +10,7 @@ class AccountsController < ApplicationController
       redirect_to account_path, notice: "Dados atualizados."
     else
       @subscription = @host.subscription
-      render :show, status: :unprocessable_entity
+      render :show, status: :unprocessable_content
     end
   end
 end

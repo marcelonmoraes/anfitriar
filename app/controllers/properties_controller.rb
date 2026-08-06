@@ -17,7 +17,7 @@ class PropertiesController < ApplicationController
     if @property.save
       redirect_to @property, notice: "Hospedagem criada."
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -28,7 +28,7 @@ class PropertiesController < ApplicationController
     if @property.update(property_params)
       redirect_to @property, notice: "Hospedagem atualizada."
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 

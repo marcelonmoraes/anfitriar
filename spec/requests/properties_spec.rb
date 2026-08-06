@@ -32,7 +32,7 @@ RSpec.describe "Hospedagens", type: :request do
     create(:property, host: host)
 
     post properties_path, params: { property: { name: "Extra", address: "Rua X" } }
-    expect(response).to have_http_status(:unprocessable_entity)
+    expect(response).to have_http_status(:unprocessable_content)
     expect(response.body).to include("limite")
   end
 

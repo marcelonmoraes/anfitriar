@@ -22,7 +22,7 @@ RSpec.describe "Cadastro do anfitrião", type: :request do
   it "reexibe o formulário com erros quando inválido" do
     post registration_path, params: { host: { name: "", email_address: "x", phone: "1",
                                               password: "a", password_confirmation: "b" } }
-    expect(response).to have_http_status(:unprocessable_entity)
+    expect(response).to have_http_status(:unprocessable_content)
     expect(Host.count).to eq(0)
   end
 

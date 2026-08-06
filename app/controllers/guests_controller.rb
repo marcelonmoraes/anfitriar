@@ -14,7 +14,7 @@ class GuestsController < ApplicationController
     if @guest.save
       redirect_to guests_path, notice: "Cliente cadastrado."
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -25,7 +25,7 @@ class GuestsController < ApplicationController
     if @guest.update(guest_params)
       redirect_to guests_path, notice: "Cliente atualizado."
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 

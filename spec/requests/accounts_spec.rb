@@ -24,6 +24,6 @@ RSpec.describe "Conta", type: :request do
 
   it "reexibe com erros quando inválido" do
     patch account_path, params: { host: { name: "", phone: "1", email_address: "x" } }
-    expect(response).to have_http_status(:unprocessable_entity)
+    expect(response).to have_http_status(:unprocessable_content)
   end
 end

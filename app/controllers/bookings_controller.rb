@@ -14,7 +14,7 @@ class BookingsController < ApplicationController
     if @booking.save
       redirect_to @booking, notice: "Reserva criada. Envie o link ao hóspede."
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 

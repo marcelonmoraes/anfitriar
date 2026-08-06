@@ -60,10 +60,10 @@ RSpec.describe "Categorias", type: :request do
     category = create(:category, :own, host: host, name: "Válida")
 
     post categories_path, params: { category: { name: "" } }
-    expect(response).to have_http_status(:unprocessable_entity)
+    expect(response).to have_http_status(:unprocessable_content)
 
     patch category_path(category), params: { category: { name: "" } }
-    expect(response).to have_http_status(:unprocessable_entity)
+    expect(response).to have_http_status(:unprocessable_content)
     expect(category.reload.name).to eq("Válida")
   end
 end
