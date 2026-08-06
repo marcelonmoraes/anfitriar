@@ -13,4 +13,7 @@
     </div>
     <%= f.submit "Entrar", class: "w-full rounded-lg bg-gray-900 px-4 py-2.5 font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 active:bg-gray-950" %>
   <% end %>
+  <p class="mt-4 text-center text-sm text-gray-600">
+    Ainda não tem conta? <%= link_to "Criar conta", new_registration_path, class: "font-medium underline" %>
+  </p>
 </div>
