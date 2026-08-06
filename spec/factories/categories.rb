@@ -5,7 +5,7 @@ FactoryBot.define do
     host { nil }
 
     trait :own do
-      host
+      association :host, strategy: :create
       position { nil }
     end
   end
