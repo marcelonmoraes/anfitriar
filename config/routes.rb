@@ -11,6 +11,14 @@ Rails.application.routes.draw do
   end
   resources :guests, except: %i[show]
   resources :categories, except: %i[show]
+  resources :bookings, only: %i[index new create show] do
+    member do
+      patch :revoke
+      patch :reissue
+    end
+  end
+
+  get "g/:token", to: "public_guides#show", as: :public_guide
 
   root "properties#index"
 

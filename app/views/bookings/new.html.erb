@@ -1,0 +1,12 @@
+<h1 class="mb-6 text-2xl font-bold">Nova reserva</h1>
+<% if Current.host.properties.none? || Current.host.guests.none? %>
+  <p class="rounded-lg border border-dashed border-gray-300 p-8 text-sm text-gray-600">
+    Para criar uma reserva você precisa de pelo menos
+    <%= link_to "uma hospedagem", properties_path,
+          class: "font-medium underline decoration-gray-300 underline-offset-4 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2" %> e
+    <%= link_to "um cliente", guests_path,
+          class: "font-medium underline decoration-gray-300 underline-offset-4 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2" %> cadastrados.
+  </p>
+<% else %>
+  <%= render "form", booking: @booking %>
+<% end %>

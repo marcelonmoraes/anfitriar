@@ -1,0 +1,31 @@
+<%= form_with model: booking, class: "max-w-lg space-y-5" do |f| %>
+  <%= render "shared/form_errors", record: booking %>
+  <div>
+    <%= f.label :property_id, "Hospedagem", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.collection_select :property_id, Current.host.properties.order(:name), :id, :name,
+          { prompt: "Escolha a hospedagem" },
+          { required: true, autofocus: true,
+            class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none sm:text-sm" } %>
+  </div>
+  <div>
+    <%= f.label :guest_id, "Cliente", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.collection_select :guest_id, Current.host.guests.order(:name), :id, :name,
+          { prompt: "Escolha o cliente" },
+          { required: true,
+            class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none sm:text-sm" } %>
+  </div>
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <%= f.label :check_in, class: "block text-sm font-medium text-gray-700" %>
+      <%= f.date_field :check_in, required: true,
+            class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none sm:text-sm" %>
+    </div>
+    <div>
+      <%= f.label :check_out, class: "block text-sm font-medium text-gray-700" %>
+      <%= f.date_field :check_out, required: true,
+            class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none sm:text-sm" %>
+    </div>
+  </div>
+  <%= f.submit "Criar reserva",
+        class: "rounded-lg bg-gray-900 px-4 py-2.5 font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 active:bg-gray-950" %>
+<% end %>
