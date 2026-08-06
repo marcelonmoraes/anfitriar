@@ -1,9 +1,12 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+# Planos (valores em centavos; descontos: trimestral −10%, semestral −15%, anual −25%)
+[
+  { slug: "essencial", name: "Essencial", monthly_price_cents: 1990,
+    quarterly_price_cents: 5373, semiannual_price_cents: 10_149, annual_price_cents: 17_910,
+    max_properties: 3 },
+  { slug: "pro", name: "Pro", monthly_price_cents: 3990,
+    quarterly_price_cents: 10_773, semiannual_price_cents: 20_349, annual_price_cents: 35_910,
+    max_properties: nil }
+].each do |attributes|
+  plan = Plan.find_or_initialize_by(slug: attributes[:slug])
+  plan.update!(attributes)
+end
