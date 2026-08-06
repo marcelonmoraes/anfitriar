@@ -2,6 +2,7 @@
   <div class="mx-auto flex max-w-4xl items-center justify-between px-4 py-3">
     <span class="text-lg font-semibold tracking-tight">Anfitriar</span>
     <div class="flex items-center gap-4 text-sm">
+      <%= link_to t("nav.properties"), properties_path, class: "text-gray-700 hover:text-gray-900" %>
       <%= button_to t("nav.logout"), session_path, method: :delete,
             class: "font-medium text-gray-500 transition-colors hover:text-gray-900 focus:outline-none focus:underline" %>
     </div>

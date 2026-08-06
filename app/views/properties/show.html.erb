@@ -1,0 +1,14 @@
+<div class="mb-6 flex items-center justify-between">
+  <h1 class="text-2xl font-bold"><%= @property.name %></h1>
+  <div class="flex gap-2">
+    <%= link_to "Editar", edit_property_path(@property),
+          class: "rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2" %>
+    <%= button_to "Excluir", property_path(@property), method: :delete,
+          class: "rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2",
+          form: { data: { turbo_confirm: "Excluir esta hospedagem e todo o seu guia?" } } %>
+  </div>
+</div>
+<% if @property.cover_photo.attached? %>
+  <%= image_tag @property.cover_photo, alt: @property.name, class: "mb-4 h-56 w-full rounded-lg object-cover" %>
+<% end %>
+<p class="text-gray-600"><%= @property.address %></p>
