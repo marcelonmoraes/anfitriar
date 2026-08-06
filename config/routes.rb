@@ -7,6 +7,7 @@ Rails.application.routes.draw do
       resource :guide, only: :show
       patch "guide/cards/:category_id", to: "guide_cards#update", as: :guide_card
       patch "guide/reorder", to: "guide_reorders#update", as: :guide_reorder
+      resource :preview, only: :show
     end
   end
   resources :guests, except: %i[show]
