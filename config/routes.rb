@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   resources :passwords, param: :token, only: %i[new create edit update]
   resources :properties
   resources :guests, except: %i[show]
+  resources :categories, except: %i[show]
 
   root "properties#index"
 
