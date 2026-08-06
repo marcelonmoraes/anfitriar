@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_06_145313) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_06_150001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "hosts", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email_address", null: false
+    t.string "name", null: false
+    t.string "password_digest", null: false
+    t.string "phone", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email_address"], name: "index_hosts_on_email_address", unique: true
+  end
 
   create_table "plans", force: :cascade do |t|
     t.integer "annual_price_cents", null: false
@@ -34,4 +44,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_145313) do
     t.integer "trial_days", default: 7, null: false
     t.datetime "updated_at", null: false
   end
+
+  create_table "sessions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "host_id", null: false
+    t.string "ip_address"
+    t.datetime "updated_at", null: false
+    t.string "user_agent"
+    t.index ["host_id"], name: "index_sessions_on_host_id"
+  end
+
+  add_foreign_key "sessions", "hosts"
 end
