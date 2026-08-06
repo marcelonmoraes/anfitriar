@@ -7,8 +7,11 @@ class RegistrationsController < ApplicationController
 
   def create
     @host = Host.new(host_params)
-    if @host.save
-      Subscription.start_trial_for(@host)
+    if @host.valid?
+      ActiveRecord::Base.transaction do
+        @host.save!
+        Subscription.start_trial_for(@host)
+      end
       start_new_session_for @host
       redirect_to root_path,
                   notice: "Bem-vindo ao Anfitriar! Seu período de teste de #{PlatformConfiguration.current.trial_days} dias começou."

@@ -25,4 +25,17 @@ RSpec.describe "Cadastro do anfitrião", type: :request do
     expect(response).to have_http_status(:unprocessable_entity)
     expect(Host.count).to eq(0)
   end
+
+  it "não deixa anfitrião órfão se a criação do trial falhar" do
+    Plan.where(slug: "pro").destroy_all
+
+    expect {
+      post registration_path, params: { host: {
+        name: "Ana", email_address: "orfa@example.com", phone: "11987654321",
+        password: "senha-segura-123", password_confirmation: "senha-segura-123"
+      } }
+    }.not_to change(Host, :count)
+
+    expect(response).to have_http_status(:not_found)
+  end
 end
