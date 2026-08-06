@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_06_174513) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_06_181227) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "action_text_rich_texts", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
+  end
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
@@ -40,6 +50,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_174513) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "cards", force: :cascade do |t|
+    t.bigint "category_id", null: false
+    t.datetime "created_at", null: false
+    t.boolean "hidden", default: false, null: false
+    t.integer "position"
+    t.bigint "property_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_cards_on_category_id"
+    t.index ["property_id", "category_id"], name: "index_cards_on_property_id_and_category_id", unique: true
+    t.index ["property_id"], name: "index_cards_on_property_id"
   end
 
   create_table "categories", force: :cascade do |t|
@@ -128,6 +150,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_174513) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "cards", "categories"
+  add_foreign_key "cards", "properties"
   add_foreign_key "categories", "hosts"
   add_foreign_key "guests", "hosts"
   add_foreign_key "properties", "hosts"
