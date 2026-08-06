@@ -1,5 +1,7 @@
 class PasswordsController < ApplicationController
   allow_unauthenticated_access
+  rate_limit to: 5, within: 15.minutes, only: :create,
+             with: -> { redirect_to new_password_url, alert: "Muitas tentativas. Aguarde alguns minutos." }
   before_action :set_host_by_token, only: %i[edit update]
 
   def new
