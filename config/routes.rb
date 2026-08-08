@@ -22,6 +22,8 @@ Rails.application.routes.draw do
   resource :account, only: %i[show update]
 
   get "g/:token", to: "public_guides#show", as: :public_guide
+  get "g/:token/verify", to: "public_guides#verify", as: :verify_public_guide
+  post "g/:token/verify", to: "public_guides#verify_submit", as: :verify_submit_public_guide
 
   namespace :admin do
     get "login", to: "sessions#new"

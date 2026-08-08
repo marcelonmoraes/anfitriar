@@ -37,6 +37,13 @@ class Booking < ApplicationRecord
     update!(revoked_at: nil)
   end
 
+  def verify_guest!(cpf, phone_last4)
+    normalized_cpf = cpf.gsub(/\D/, "")
+    normalized_phone = phone_last4.to_s.last(4)
+
+    guest.cpf == normalized_cpf && guest.phone.last(4) == normalized_phone
+  end
+
   private
     def check_out_after_check_in
       return if check_in.blank? || check_out.blank?
