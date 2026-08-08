@@ -19,6 +19,21 @@ RSpec.describe "Rota pública do guia", type: :request do
       expect(response.body).not_to include(guest.cpf)
       expect(response.body).not_to include(guest.phone)
     end
+
+    it "exibe o guia com cards e estrutura do modal quando autenticado" do
+      category = create(:category, name: "Wi-Fi")
+      card = create(:card, property: property, category: category, description: "Senha: 123456")
+
+      post verify_submit_public_guide_path(booking.access_token), params: { cpf: guest.cpf, phone_last4: guest.phone.last(4) }
+      expect(response).to redirect_to(public_guide_path(booking.access_token))
+
+      get public_guide_path(token: booking.access_token)
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Wi-Fi")
+      expect(response.body).to include("Senha: 123456")
+      expect(response.body).to include('div id="guide-modal"')
+      expect(response.body).to include('data-guide-modal-target="cardContent"')
+    end
   end
 
   context "com token inválido" do

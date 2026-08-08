@@ -48,7 +48,7 @@ class PublicGuidesController < ApplicationController
   def set_verification_cookie
     cookies.signed["guest_access_#{@booking.access_token}"] = {
       value: @booking.access_token,
-      expires: @booking.accessible_until,
+      expires: @booking.accessible_until.end_of_day,
       httponly: true,
       secure: Rails.env.production?,
       same_site: :lax

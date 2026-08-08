@@ -12,31 +12,67 @@ export default class extends Controller {
   }
 
   open(event) {
-    const card = event.currentTarget
-    const title = card.dataset.guideModalTitleValue
-    const content = card.dataset.guideModalContentValue
+    if (event) {
+      if (event.type === "keydown" && (event.key === " " || event.key === "Spacebar")) {
+        event.preventDefault()
+      }
+    }
 
-    this.titleTarget.textContent = title
-    this.bodyTarget.innerHTML = content
-    this.modalTarget.showModal()
+    const card = event ? event.currentTarget : null
+    if (!card) return
 
-    // Focus trap for accessibility
+    const title = card.dataset.guideModalTitleValue || card.querySelector("h2")?.textContent?.trim() || ""
+
+    // Find card content container
+    const contentElement = card.querySelector("[data-guide-modal-target='cardContent'], template, .card-content-hidden")
+    let content = ""
+
+    if (contentElement) {
+      content = contentElement.innerHTML
+    } else if (card.dataset.guideModalContentValue) {
+      content = card.dataset.guideModalContentValue
+    }
+
+    if (this.hasTitleTarget) {
+      this.titleTarget.textContent = title
+    }
+
+    if (this.hasBodyTarget) {
+      this.bodyTarget.innerHTML = content
+    }
+
+    const modalEl = this.hasModalTarget ? this.modalTarget : document.getElementById("guide-modal")
+    if (modalEl) {
+      modalEl.classList.remove("hidden")
+      if (typeof modalEl.showModal === "function") {
+        try { modalEl.showModal() } catch (e) {}
+      }
+    }
+
     this.previousFocus = document.activeElement
-    this.modalTarget.querySelector(".modal-close").focus()
+    if (modalEl) {
+      const closeBtn = modalEl.querySelector(".modal-close") || modalEl.querySelector("button")
+      if (closeBtn) {
+        closeBtn.focus()
+      }
+    }
 
-    // Prevent body scroll
     document.body.style.overflow = "hidden"
-
-    // Listen for Escape key
     document.addEventListener("keydown", this.handleKeydownBound)
   }
 
   close() {
-    this.modalTarget.close()
+    const modalEl = this.hasModalTarget ? this.modalTarget : document.getElementById("guide-modal")
+    if (modalEl) {
+      if (typeof modalEl.close === "function" && modalEl.open) {
+        try { modalEl.close() } catch (e) {}
+      }
+      modalEl.classList.add("hidden")
+    }
+
     document.body.style.overflow = ""
 
-    // Restore focus to the card that was clicked
-    if (this.previousFocus) {
+    if (this.previousFocus && typeof this.previousFocus.focus === "function") {
       this.previousFocus.focus()
     }
 
@@ -45,6 +81,13 @@ export default class extends Controller {
 
   handleKeydown(event) {
     if (event.key === "Escape") {
+      this.close()
+    }
+  }
+
+  backdropClick(event) {
+    const modalEl = this.hasModalTarget ? this.modalTarget : document.getElementById("guide-modal")
+    if (modalEl && event.target === modalEl) {
       this.close()
     }
   }
