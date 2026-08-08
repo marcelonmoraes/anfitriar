@@ -1,34 +1,64 @@
 <% content_for :title, "#{@booking.property.name} — Guia do Hóspede" %>
 
-<div class="min-h-screen bg-gray-50">
+<div class="min-h-screen bg-gray-50" data-controller="guide-modal">
   <!-- Sticky Header -->
   <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200">
     <div class="mx-auto max-w-2xl px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-2">
         <span class="text-lg font-bold tracking-tight text-gray-900">Anfitriar</span>
       </div>
-      <div class="text-right">
-        <p class="text-xs font-medium text-gray-900"><%= @booking.property.name %></p>
-        <p class="text-[10px] text-gray-500">
-          Check-in: <%= l @booking.check_in, format: :short %> · Check-out: <%= l @booking.check_out, format: :short %>
-        </p>
-      </div>
+      <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700">
+        Guia do Hóspede
+      </span>
     </div>
   </header>
 
-  <main class="mx-auto max-w-2xl px-4 py-8 pb-24">
+  <main class="mx-auto max-w-2xl px-4 py-6 pb-24">
+    <!-- Property Title & Welcome Banner -->
+    <header class="mb-6 rounded-2xl bg-white p-5 sm:p-6 border border-gray-200 shadow-sm">
+      <div class="mb-2 inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
+        <span>✨ Bem-vindo(a)</span>
+      </div>
+      <h1 class="text-xl sm:text-2xl font-bold text-gray-900 leading-tight">
+        <%= @booking.property.name %>
+      </h1>
+
+      <div class="mt-4 pt-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm text-gray-600">
+        <div class="flex items-center gap-2">
+          <svg class="h-4 w-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+          </svg>
+          <span><strong>Check-in:</strong> <%= l @booking.check_in, format: :short rescue @booking.check_in %></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <svg class="h-4 w-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+          </svg>
+          <span><strong>Check-out:</strong> <%= l @booking.check_out, format: :short rescue @booking.check_out %></span>
+        </div>
+      </div>
+    </header>
     <% if @cards.any? %>
-      <div class="space-y-8" id="guide-cards">
+      <div class="space-y-3" id="guide-cards" role="list" aria-label="Categorias do guia">
         <% @cards.each do |card| %>
-          <article class="rounded-xl border border-gray-200 bg-white p-5 sm:p-6" aria-labelledby="card-<%= card.category.id %>-heading">
-            <header class="mb-4">
-              <h2 id="card-<%= card.category.id %>-heading" class="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                <%= category_icon(card.category.name) %>
-                <%= card.category.name %>
-              </h2>
-            </header>
-            <div class="prose prose-gray prose-sm max-w-none text-gray-700">
-              <%= card.description %>
+          <article class="rounded-xl border border-gray-200 bg-white p-4 sm:p-5 cursor-pointer hover:border-gray-900 transition-all shadow-sm active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-gray-900" 
+                   role="button" 
+                   tabindex="0"
+                   aria-labelledby="card-<%= card.category.id %>-heading"
+                   data-action="click->guide-modal#open keydown.enter->guide-modal#open keydown.space->guide-modal#open"
+                   data-guide-modal-title-value="<%= card.category.name %>">
+            <h2 id="card-<%= card.category.id %>-heading" class="text-base sm:text-lg font-semibold text-gray-900 flex items-center gap-3">
+              <%= category_icon(card.category.name) %>
+              <span><%= card.category.name %></span>
+              <svg class="ml-auto h-5 w-5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
+            </h2>
+
+            <div class="hidden" data-guide-modal-target="cardContent">
+              <div class="prose prose-gray prose-base max-w-none text-gray-800">
+                <%= card.description %>
+              </div>
             </div>
           </article>
         <% end %>
@@ -52,4 +82,30 @@
       Desenvolvido com cuidado por <strong class="text-gray-900">Anfitriar</strong>
     </p>
   </footer>
+
+  <!-- Modal Tela Inteira (hidden by default) -->
+  <div id="guide-modal" 
+       class="fixed inset-0 z-50 hidden w-screen h-screen max-w-none max-h-none m-0 p-0 bg-white overflow-hidden flex-col" 
+       aria-modal="true" 
+       aria-labelledby="modal-title" 
+       role="dialog"
+       data-guide-modal-target="modal">
+    <header class="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-gray-200 bg-white shrink-0">
+      <h2 id="modal-title" class="text-xl font-bold text-gray-900" data-guide-modal-target="title"></h2>
+      <button type="button" class="modal-close rounded-full p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900" 
+              data-action="click->guide-modal#close" aria-label="Fechar guia">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </header>
+    <div class="flex-1 overflow-y-auto px-4 sm:px-6 py-6 max-w-3xl mx-auto w-full">
+      <div id="modal-body" class="prose prose-gray prose-base max-w-none text-gray-800" data-guide-modal-target="body"></div>
+    </div>
+    <footer class="px-4 sm:px-6 py-3 border-t border-gray-200 bg-gray-50 text-center shrink-0">
+      <button type="button" data-action="click->guide-modal#close" class="w-full sm:w-auto px-6 py-2.5 bg-gray-900 text-white rounded-lg font-medium text-sm hover:bg-gray-800 transition-colors">
+        Fechar
+      </button>
+    </footer>
+  </div>
 </div>
