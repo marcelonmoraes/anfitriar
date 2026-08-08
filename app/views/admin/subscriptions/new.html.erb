@@ -1,0 +1,51 @@
+<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    <div class="flex items-center gap-2">
+      <%= link_to admin_host_path(@host), class: "text-sm text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1" do %>
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+        </svg>
+      <% end %>
+      <h1 class="text-2xl font-bold tracking-tight text-gray-900">Nova Assinatura — <%= @host.name %></h1>
+    </div>
+  </div>
+</div>
+
+<%= form_with model: [:admin, @host, @subscription], url: admin_host_subscription_path(@host), method: :post, class: "max-w-lg space-y-5" do |f| %>
+  <%= render "shared/form_errors", record: @subscription %>
+
+  <div>
+    <%= f.label :plan_id, "Plano", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.collection_select :plan_id, @plans, :id, :name,
+          { prompt: "Selecione um plano" },
+          { required: true,
+            class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none text-sm px-3.5 py-2.5" } %>
+  </div>
+
+  <div>
+    <%= f.label :billing_cycle, "Ciclo de Cobrança", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.select :billing_cycle,
+          Subscription::CYCLES.map { |c| [c.humanize, c] },
+          { required: true },
+          class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none text-sm px-3.5 py-2.5" %>
+  </div>
+
+  <div>
+    <%= f.label :status, "Status", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.select :status,
+          Subscription::STATUSES.map { |s| [s.humanize, s] },
+          { required: true },
+          class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none text-sm px-3.5 py-2.5" %>
+  </div>
+
+  <div>
+    <%= f.label :trial_ends_at, "Expiração do Trial (opcional, usado apenas se status for 'trial')", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.datetime_field :trial_ends_at, required: false,
+          class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none text-sm px-3.5 py-2.5" %>
+  </div>
+
+  <div class="flex items-center gap-3 pt-2">
+    <%= f.submit "Criar Assinatura", class: "rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 active:bg-gray-950 cursor-pointer" %>
+    <%= link_to "Cancelar", admin_host_path(@host), class: "text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" %>
+  </div>
+<% end %>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <title>Painel do Admin — Anfitriar</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="min-h-screen bg-gray-50 text-gray-900 antialiased">
+    <a href="#admin-main-content" class="skip-link">Pular para o conteúdo principal</a>
+    <div class="flex min-h-screen flex-col">
+      <%= render "layouts/admin_nav" %>
+      <main id="admin-main-content" class="flex-1 mx-auto max-w-6xl w-full px-4 py-8 sm:px-6">
+        <%= render "shared/flash" %>
+        <%= yield %>
+      </main>
+      <footer class="border-t border-gray-200 bg-white py-4">
+        <div class="mx-auto max-w-6xl px-4 text-center text-xs text-gray-500">
+          Anfitriar Admin &copy; <%= Time.current.year %> — Acesso Restrito
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

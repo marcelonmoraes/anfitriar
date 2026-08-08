@@ -1,0 +1,18 @@
+<nav class="border-b border-gray-200 bg-white sticky top-0 z-40" aria-label="Navegação do painel administrativo">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+    <a href="<%= admin_root_path %>" class="text-lg font-semibold tracking-tight text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 rounded-md" aria-label="Anfitriar Admin - Dashboard">
+      <span class="text-gray-900">Anfitriar</span>
+      <span class="ml-2 px-2 py-0.5 text-xs font-medium uppercase tracking-wider rounded-full bg-red-100 text-red-800">Admin</span>
+    </a>
+    <div class="flex items-center gap-1 text-sm">
+      <%= admin_nav_link "Dashboard", admin_root_path, "nav-dashboard" %>
+      <%= admin_nav_link "Planos", admin_plans_path, "nav-plans" %>
+      <%= admin_nav_link "Categorias", admin_categories_path, "nav-categories" %>
+      <%= admin_nav_link "Anfitriões", admin_hosts_path, "nav-hosts" %>
+      <%= admin_nav_link "Configurações", edit_admin_platform_configuration_path, "nav-config" %>
+      <%= button_to "Sair", admin_logout_path, method: :delete,
+            class: "nav-link text-gray-500 hover:text-gray-900 px-3 py-1.5 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2",
+            form: { class: "contents" } %>
+    </div>
+  </div>
+</nav>

@@ -21,6 +21,24 @@ end
   category.update!(position: index + 1)
 end
 
+# Owner de desenvolvimento / produção inicial
+if Rails.env.development?
+  owner = Owner.find_or_initialize_by(email_address: "admin@anfitriar.local")
+  owner.assign_attributes(
+    name: "Admin Geral",
+    password: "senha123",
+    password_confirmation: "senha123"
+  )
+  owner.save!
+elsif Owner.none?
+  Owner.create!(
+    name: "Owner Anfitriar",
+    email_address: "admin@anfitriar.com.br",
+    password: "senha-segura-admin-123",
+    password_confirmation: "senha-segura-admin-123"
+  )
+end
+
 # Host de desenvolvimento
 if Rails.env.development?
   host = Host.find_or_initialize_by(email_address: "admin@anfitriar.local")

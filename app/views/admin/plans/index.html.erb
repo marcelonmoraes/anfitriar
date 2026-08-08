@@ -1,0 +1,76 @@
+<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight text-gray-900">Planos</h1>
+    <p class="mt-1 text-sm text-gray-600">Gerencie os planos de assinatura e seus valores</p>
+  </div>
+  <%= link_to new_admin_plan_path,
+        class: "inline-flex items-center justify-center gap-2 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 active:bg-gray-950 shrink-0" do %>
+    <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+      <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+    </svg>
+    Novo plano
+  <% end %>
+</div>
+
+<% if @plans.none? %>
+  <div class="rounded-lg border border-dashed border-gray-300 p-8 text-center bg-white">
+    <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 10-18 0 9 9 0 0018 0z" />
+      </svg>
+    </div>
+    <h3 class="text-sm font-semibold text-gray-900">Nenhum plano cadastrado</h3>
+    <p class="mt-1 text-sm text-gray-500 max-w-sm mx-auto">
+      Crie o primeiro plano para que anfitriões possam assinar.
+    </p>
+    <div class="mt-4">
+      <%= link_to "Criar plano", new_admin_plan_path,
+            class: "inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2" %>
+    </div>
+  </div>
+<% else %>
+  <div class="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+    <table class="w-full text-sm">
+      <caption class="sr-only">Planos de assinatura</caption>
+      <thead class="bg-gray-50 text-left">
+        <tr>
+          <th scope="col" class="px-4 py-3 font-medium text-gray-700">Nome</th>
+          <th scope="col" class="px-4 py-3 font-medium text-gray-700">Slug</th>
+          <th scope="col" class="px-4 py-3 font-medium text-gray-700">Mensal</th>
+          <th scope="col" class="px-4 py-3 font-medium text-gray-700">Trimestral</th>
+          <th scope="col" class="px-4 py-3 font-medium text-gray-700">Semestral</th>
+          <th scope="col" class="px-4 py-3 font-medium text-gray-700">Anual</th>
+          <th scope="col" class="px-4 py-3 font-medium text-gray-700">Máx. Hospedagens</th>
+          <th scope="col" class="px-4 py-3"><span class="sr-only">Ações</span></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <% @plans.each do |plan| %>
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-4 py-3 font-medium text-gray-900"><%= plan.name %></td>
+            <td class="px-4 py-3 font-mono text-gray-600"><%= plan.slug %></td>
+            <td class="px-4 py-3 tabular-nums text-gray-600"><%= number_to_currency(plan.monthly_price_cents / 100.0, unit: "R$ ", separator: ",", delimiter: ".") %></td>
+            <td class="px-4 py-3 tabular-nums text-gray-600"><%= number_to_currency(plan.quarterly_price_cents / 100.0, unit: "R$ ", separator: ",", delimiter: ".") %></td>
+            <td class="px-4 py-3 tabular-nums text-gray-600"><%= number_to_currency(plan.semiannual_price_cents / 100.0, unit: "R$ ", separator: ",", delimiter: ".") %></td>
+            <td class="px-4 py-3 tabular-nums text-gray-600"><%= number_to_currency(plan.annual_price_cents / 100.0, unit: "R$ ", separator: ",", delimiter: ".") %></td>
+            <td class="px-4 py-3 tabular-nums text-gray-600"><%= plan.max_properties.present? ? plan.max_properties : "Ilimitado" %></td>
+            <td class="px-4 py-3 text-right">
+              <div class="flex items-center justify-end gap-2">
+                <%= link_to admin_plan_path(plan),
+                      class: "rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2",
+                      aria: { label: "Ver #{plan.name}" } %>
+                <%= link_to edit_admin_plan_path(plan),
+                      class: "rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2",
+                      aria: { label: "Editar #{plan.name}" } %>
+                <%= button_to "Excluir", admin_plan_path(plan), method: :delete,
+                      class: "rounded-lg px-3 py-1.5 text-sm font-medium text-red-600 hover:text-red-900 hover:bg-red-50 transition-colors focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2",
+                      form: { class: "inline", data: { turbo_confirm: "Excluir este plano? Anfitriões vinculados perderão a assinatura." } },
+                      aria: { label: "Excluir #{plan.name}" } %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>
