@@ -10,28 +10,28 @@
       <div class="text-right">
         <p class="text-xs font-medium text-gray-900"><%= @booking.property.name %></p>
         <p class="text-[10px] text-gray-500">
-          Check-in: <%= l @booking.check_in, format: :short %> · Check-out: <%= l @booking.check_out, format: :short %>
+          Check-in: <%= l @booking.check_in, format: :short rescue @booking.check_in %> · Check-out: <%= l @booking.check_out, format: :short rescue @booking.check_out %>
         </p>
       </div>
     </div>
   </header>
 
-  <main class="mx-auto max-w-2xl px-4 py-8 pb-24">
+  <main class="mx-auto max-w-2xl px-4 py-6 pb-24">
     <% if @cards.any? %>
       <div class="space-y-3" id="guide-cards" role="list" aria-label="Categorias do guia">
         <% @cards.each do |card| %>
-          <article class="rounded-xl border border-gray-200 bg-white p-4 sm:p-5 cursor-pointer hover:border-gray-300 transition-colors" 
+          <article class="rounded-xl border border-gray-200 bg-white p-4 sm:p-5 cursor-pointer hover:border-gray-900 transition-all shadow-sm active:scale-[0.99]" 
                    role="listitem" 
                    aria-labelledby="card-<%= card.category.id %>-heading"
                    data-action="click->guide-modal#open"
                    data-guide-modal-card-id-value="<%= card.category.id %>"
                    data-guide-modal-title-value="<%= card.category.name %>"
                    data-guide-modal-content-value="<%= card.description.to_s.gsub('"', '"') %>">
-            <h2 id="card-<%= card.category.id %>-heading" class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <h2 id="card-<%= card.category.id %>-heading" class="text-base sm:text-lg font-semibold text-gray-900 flex items-center gap-3">
               <%= category_icon(card.category.name) %>
-              <%= card.category.name %>
-              <svg class="ml-auto h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.5L8.25 12l6.75-7.5" />
+              <span><%= card.category.name %></span>
+              <svg class="ml-auto h-5 w-5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
               </svg>
             </h2>
           </article>
@@ -57,20 +57,24 @@
     </p>
   </footer>
 
-  <!-- Modal -->
-  <dialog id="guide-modal" class="modal" aria-modal="true" aria-labelledby="modal-title" role="dialog" data-guide-modal-target="modal">
-    <div class="modal-backdrop" data-action="click->guide-modal#close"></div>
-    <div class="modal-content rounded-2xl border border-gray-200 bg-white p-5 sm:p-6 max-w-lg w-full mx-4 my-auto max-h-[85vh] overflow-hidden flex flex-col">
-      <header class="flex items-center justify-between mb-4 border-b border-gray-100 pb-3">
-        <h2 id="modal-title" class="text-lg font-semibold text-gray-900" data-guide-modal-target="title"></h2>
-        <button type="button" class="modal-close rounded-lg p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" 
-                data-action="click->guide-modal#close" aria-label="Fechar">
-          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </header>
-      <div id="modal-body" class="prose prose-gray prose-sm max-w-none text-gray-700 overflow-y-auto flex-1" data-guide-modal-target="body"></div>
+  <!-- Modal Tela Inteira -->
+  <dialog id="guide-modal" class="modal fixed inset-0 z-50 w-screen h-screen max-w-none max-h-none m-0 p-0 bg-white overflow-hidden flex flex-col" aria-modal="true" aria-labelledby="modal-title" role="dialog" data-guide-modal-target="modal">
+    <header class="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-gray-200 bg-white shrink-0">
+      <h2 id="modal-title" class="text-xl font-bold text-gray-900" data-guide-modal-target="title"></h2>
+      <button type="button" class="modal-close rounded-full p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900" 
+              data-action="click->guide-modal#close" aria-label="Fechar guia">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </header>
+    <div class="flex-1 overflow-y-auto px-4 sm:px-6 py-6 max-w-3xl mx-auto w-full">
+      <div id="modal-body" class="prose prose-gray prose-base max-w-none text-gray-800" data-guide-modal-target="body"></div>
     </div>
+    <footer class="px-4 sm:px-6 py-3 border-t border-gray-200 bg-gray-50 text-center shrink-0">
+      <button type="button" data-action="click->guide-modal#close" class="w-full sm:w-auto px-6 py-2.5 bg-gray-900 text-white rounded-lg font-medium text-sm hover:bg-gray-800 transition-colors">
+        Fechar
+      </button>
+    </footer>
   </dialog>
 </div>
