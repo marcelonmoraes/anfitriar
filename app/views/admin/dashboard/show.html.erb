@@ -1,0 +1,126 @@
+<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight text-gray-900">Dashboard Administrativo</h1>
+    <p class="mt-1 text-sm text-gray-600">Visão geral da plataforma e métricas financeiras</p>
+  </div>
+</div>
+
+<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+  <article class="rounded-xl border border-gray-200 bg-white p-5">
+    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Total de Anfitriões</p>
+    <p class="mt-1 text-3xl font-bold text-gray-900"><%= @total_hosts %></p>
+  </article>
+
+  <article class="rounded-xl border border-gray-200 bg-white p-5">
+    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Assinaturas Ativas</p>
+    <p class="mt-1 text-3xl font-bold text-green-700"><%= @active_subscriptions.count %></p>
+  </article>
+
+  <article class="rounded-xl border border-gray-200 bg-white p-5">
+    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">MRR</p>
+    <p class="mt-1 text-3xl font-bold text-gray-900"><%= number_to_currency(@mrr_cents / 100.0, unit: "R$ ", separator: ",", delimiter: ".") %></p>
+  </article>
+
+  <article class="rounded-xl border border-gray-200 bg-white p-5">
+    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Conversão Trial</p>
+    <p class="mt-1 text-3xl font-bold text-gray-900"><%= @conversion_rate %>%</p>
+  </article>
+</div>
+
+<div class="grid gap-4 lg:grid-cols-2">
+  <section class="rounded-xl border border-gray-200 bg-white p-5">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Resumo por Status</h2>
+    <dl class="space-y-3 text-sm">
+      <div class="flex justify-between">
+        <dt class="text-gray-600">Em Trial</dt>
+        <dd class="font-semibold text-gray-900"><%= @trial_subscriptions.count %></dd>
+      </div>
+      <div class="flex justify-between">
+        <dt class="text-gray-600">Ativas</dt>
+        <dd class="font-semibold text-green-700"><%= @active_subscriptions.count %></dd>
+      </div>
+      <div class="flex justify-between">
+        <dt class="text-gray-600">Pagamento Pendente</dt>
+        <dd class="font-semibold text-yellow-700"><%= @past_due_subscriptions.count %></dd>
+      </div>
+      <div class="flex justify-between">
+        <dt class="text-gray-600">Canceladas</dt>
+        <dd class="font-semibold text-red-700"><%= @canceled_subscriptions.count %></dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="rounded-xl border border-gray-200 bg-white p-5">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Projeções</h2>
+    <dl class="space-y-3 text-sm">
+      <div class="flex justify-between">
+        <dt class="text-gray-600">ARR Projetado</dt>
+        <dd class="font-semibold text-gray-900"><%= number_to_currency(@arr_cents / 100.0, unit: "R$ ", separator: ",", delimiter: ".") %></dd>
+      </div>
+      <div class="flex justify-between">
+        <dt class="text-gray-600">MRR Atual</dt>
+        <dd class="font-semibold text-gray-900"><%= number_to_currency(@mrr_cents / 100.0, unit: "R$ ", separator: ",", delimiter: ".") %></dd>
+      </div>
+    </dl>
+  </section>
+</div>
+
+<section class="mt-8 rounded-xl border border-gray-200 bg-white">
+  <div class="px-5 py-4 border-b border-gray-200">
+    <h2 class="text-lg font-semibold text-gray-900">Anfitriões Recentes</h2>
+  </div>
+  <% if @recent_hosts.any? %>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-gray-50 text-left">
+          <tr>
+            <th scope="col" class="px-4 py-3 font-medium text-gray-700">Nome</th>
+            <th scope="col" class="px-4 py-3 font-medium text-gray-700">E-mail</th>
+            <th scope="col" class="px-4 py-3 font-medium text-gray-700">Plano</th>
+            <th scope="col" class="px-4 py-3 font-medium text-gray-700">Status</th>
+            <th scope="col" class="px-4 py-3 font-medium text-gray-700">Criado em</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <% @recent_hosts.each do |host| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-3 font-medium text-gray-900"><%= host.name %></td>
+              <td class="px-4 py-3 text-gray-600"><%= host.email_address %></td>
+              <td class="px-4 py-3">
+                <% if host.subscription&.plan %>
+                  <%= host.subscription.plan.name %>
+                <% else %>
+                  <span class="text-gray-400">—</span>
+                <% end %>
+              </td>
+              <td class="px-4 py-3">
+                <% if host.subscription %>
+                  <span class="rounded-full px-2.5 py-0.5 text-xs font-medium
+                    <%= case host.subscription.status
+                        when 'trial' then 'bg-blue-100 text-blue-800'
+                        when 'active' then 'bg-green-100 text-green-800'
+                        when 'past_due' then 'bg-yellow-100 text-yellow-800'
+                        when 'canceled' then 'bg-gray-100 text-gray-700'
+                        else 'bg-gray-100 text-gray-600'
+                        end %>">
+                    <%= host.subscription.status.humanize %>
+                  </span>
+                <% else %>
+                  <span class="text-gray-400">Sem assinatura</span>
+                <% end %>
+              </td>
+              <td class="px-4 py-3 text-gray-500"><%= l host.created_at, format: :short rescue host.created_at %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <div class="px-5 py-3 border-t border-gray-200 text-right">
+      <%= link_to "Ver todos os anfitriões", admin_hosts_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900 hover:underline" %>
+    </div>
+  <% else %>
+    <div class="p-8 text-center text-gray-500">
+      Nenhum anfitrião cadastrado ainda.
+    </div>
+  <% end %>
+</section>

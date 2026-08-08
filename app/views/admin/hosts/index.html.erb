@@ -1,0 +1,92 @@
+<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight text-gray-900">Anfitriões</h1>
+    <p class="mt-1 text-sm text-gray-600">Gerencie anfitriões e visualize analytics de conta (sem acesso a conteúdo)</p>
+  </div>
+</div>
+
+<%= form_with url: admin_hosts_path, method: :get, class: "mb-6 flex flex-wrap gap-3", data: { turbo: false } do |f| %>
+  <div class="flex-1 min-w-[200px]">
+    <%= f.text_field :search, value: params[:search], placeholder: "Buscar por nome ou e-mail",
+          class: "w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none text-sm px-3.5 py-2.5" %>
+  </div>
+  <div>
+    <%= f.select :status,
+          [["Todos", ""]] + Subscription::STATUSES.map { |s| [s.humanize, s] },
+          { selected: params[:status] },
+          class: "rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none text-sm px-3.5 py-2.5" %>
+  </div>
+  <div>
+    <%= f.submit "Filtrar", class: "rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 cursor-pointer" %>
+  </div>
+<% end %>
+
+<% if @hosts.none? %>
+  <div class="rounded-lg border border-dashed border-gray-300 p-8 text-center bg-white">
+    <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0A5.971 5.971 0 0012 18.72m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm-9 3.75h.008v.008H6v-.008z" />
+      </svg>
+    </div>
+    <h3 class="text-sm font-semibold text-gray-900">Nenhum anfitrião encontrado</h3>
+    <p class="mt-1 text-sm text-gray-500">Tente ajustar os filtros de busca.</p>
+  </div>
+<% else %>
+  <div class="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+    <table class="w-full text-sm">
+      <caption class="sr-only">Lista de anfitriões</caption>
+      <thead class="bg-gray-50 text-left">
+        <tr>
+          <th scope="col" class="px-4 py-3 font-medium text-gray-700">Anfitrião</th>
+          <th scope="col" class="px-4 py-3 font-medium text-gray-700">E-mail</th>
+          <th scope="col" class="px-4 py-3 font-medium text-gray-700">Plano / Status</th>
+          <th scope="col" class="px-4 py-3 font-medium text-gray-700">Hospedagens</th>
+          <th scope="col" class="px-4 py-3 font-medium text-gray-700">Clientes</th>
+          <th scope="col" class="px-4 py-3 font-medium text-gray-700">Preenchimento Médio</th>
+          <th scope="col" class="px-4 py-3 font-medium text-gray-700">Último Acesso</th>
+          <th scope="col" class="px-4 py-3"><span class="sr-only">Ações</span></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <% @hosts.each do |host| %>
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-3 font-medium text-gray-900"><%= host.name %></td>
+            <td class="px-4 py-3 text-gray-600"><%= host.email_address %></td>
+            <td class="px-4 py-3">
+              <% if host.subscription&.plan %>
+                <div>
+                  <span class="font-medium text-gray-900"><%= host.subscription.plan.name %></span>
+                  <span class="ml-2 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium
+                    <%= case host.subscription.status
+                        when 'trial' then 'bg-blue-100 text-blue-800'
+                        when 'active' then 'bg-green-100 text-green-800'
+                        when 'past_due' then 'bg-yellow-100 text-yellow-800'
+                        when 'canceled' then 'bg-gray-100 text-gray-700'
+                        else 'bg-gray-100 text-gray-600'
+                        end %>">
+                    <%= host.subscription.status.humanize %>
+                  </span>
+                </div>
+              <% else %>
+                <span class="text-gray-400">Sem assinatura</span>
+              <% end %>
+            </td>
+            <td class="px-4 py-3 tabular-nums text-gray-600"><%= host.properties.count %></td>
+            <td class="px-4 py-3 tabular-nums text-gray-600"><%= host.guests.count %></td>
+            <td class="px-4 py-3 tabular-nums text-gray-600">
+              <% total_progress = host.properties.map { |p| p.guide_progress }.sum { |prog| prog[:total].positive? ? (prog[:filled].to_f / prog[:total] * 100) : 0 } %>
+              <% avg = host.properties.any? ? (total_progress / host.properties.size).round : 0 %>
+              <%= avg %>%
+            </td>
+            <td class="px-4 py-3 text-gray-500"><%= host.updated_at ? l(host.updated_at, format: :short) : "—" %></td>
+            <td class="px-4 py-3 text-right">
+              <%= link_to admin_host_path(host),
+                    class: "rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2",
+                    aria: { label: "Ver #{host.name}" } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

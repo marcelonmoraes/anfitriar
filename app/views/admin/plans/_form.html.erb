@@ -1,0 +1,52 @@
+<%= form_with model: [:admin, plan], class: "max-w-lg space-y-5" do |f| %>
+  <%= render "shared/form_errors", record: plan %>
+
+  <div>
+    <%= f.label :name, "Nome do Plano", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.text_field :name, required: true, autofocus: true, placeholder: "Ex: Essencial",
+          class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none text-sm px-3.5 py-2.5" %>
+  </div>
+
+  <div>
+    <%= f.label :slug, "Slug (Identificador único)", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.text_field :slug, required: true, placeholder: "ex: essencial",
+          class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none text-sm px-3.5 py-2.5 font-mono" %>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <%= f.label :monthly_price_cents, "Preço Mensal (centavos)", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.number_field :monthly_price_cents, required: true, placeholder: "1990 (= R$ 19,90)",
+            class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none text-sm px-3.5 py-2.5 font-mono" %>
+    </div>
+    <div>
+      <%= f.label :quarterly_price_cents, "Preço Trimestral (centavos)", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.number_field :quarterly_price_cents, required: true, placeholder: "5373",
+            class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none text-sm px-3.5 py-2.5 font-mono" %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <%= f.label :semiannual_price_cents, "Preço Semestral (centavos)", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.number_field :semiannual_price_cents, required: true, placeholder: "10149",
+            class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none text-sm px-3.5 py-2.5 font-mono" %>
+    </div>
+    <div>
+      <%= f.label :annual_price_cents, "Preço Anual (centavos)", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.number_field :annual_price_cents, required: true, placeholder: "17910",
+            class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none text-sm px-3.5 py-2.5 font-mono" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :max_properties, "Máximo de Hospedagens (deixe em branco para ilimitado)", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.number_field :max_properties, placeholder: "Ex: 3",
+          class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none text-sm px-3.5 py-2.5 font-mono" %>
+  </div>
+
+  <div class="flex items-center gap-3 pt-2">
+    <%= f.submit class: "rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 active:bg-gray-950 cursor-pointer" %>
+    <%= link_to "Cancelar", admin_plans_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" %>
+  </div>
+<% end %>

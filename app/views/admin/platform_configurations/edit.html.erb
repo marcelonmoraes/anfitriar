@@ -1,0 +1,27 @@
+<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight text-gray-900">Configurações da Plataforma</h1>
+    <p class="mt-1 text-sm text-gray-600">Ajuste parâmetros globais que afetam todos os anfitriões.</p>
+  </div>
+</div>
+
+<%= form_with model: [:admin, @platform_configuration], class: "max-w-lg space-y-5" do |f| %>
+  <%= render "shared/form_errors", record: @platform_configuration %>
+
+  <div>
+    <%= f.label :trial_days, "Dias de Trial (padrão: 7)", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.number_field :trial_days, required: true, min: 1, max: 90,
+          class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none text-sm px-3.5 py-2.5 font-mono" %>
+  </div>
+
+  <div>
+    <%= f.label :booking_access_margin_days, "Margem de Acesso do Guia (dias após check-out, padrão: 2)", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.number_field :booking_access_margin_days, required: true, min: 0, max: 30,
+          class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none text-sm px-3.5 py-2.5 font-mono" %>
+  </div>
+
+  <div class="flex items-center gap-3 pt-2">
+    <%= f.submit "Salvar", class: "rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 active:bg-gray-950 cursor-pointer" %>
+    <%= link_to "Cancelar", admin_root_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" %>
+  </div>
+<% end %>

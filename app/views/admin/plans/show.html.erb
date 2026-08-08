@@ -1,0 +1,41 @@
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight text-gray-900">Plano <%= @plan.name %></h1>
+    <p class="mt-1 text-sm text-gray-600">Slug: <code class="font-mono bg-gray-100 px-1.5 py-0.5 rounded"><%= @plan.slug %></code></p>
+  </div>
+  <div class="flex gap-2">
+    <%= link_to "Editar", edit_admin_plan_path(@plan),
+          class: "rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2" %>
+    <%= link_to "Voltar", admin_plans_path,
+          class: "rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2" %>
+  </div>
+</div>
+
+<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+  <div class="rounded-xl border border-gray-200 bg-white p-5">
+    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Mensal</p>
+    <p class="mt-1 text-2xl font-bold text-gray-900"><%= number_to_currency(@plan.monthly_price_cents / 100.0, unit: "R$ ", separator: ",", delimiter: ".") %></p>
+  </div>
+  <div class="rounded-xl border border-gray-200 bg-white p-5">
+    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Trimestral</p>
+    <p class="mt-1 text-2xl font-bold text-gray-900"><%= number_to_currency(@plan.quarterly_price_cents / 100.0, unit: "R$ ", separator: ",", delimiter: ".") %></p>
+  </div>
+  <div class="rounded-xl border border-gray-200 bg-white p-5">
+    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Semestral</p>
+    <p class="mt-1 text-2xl font-bold text-gray-900"><%= number_to_currency(@plan.semiannual_price_cents / 100.0, unit: "R$ ", separator: ",", delimiter: ".") %></p>
+  </div>
+  <div class="rounded-xl border border-gray-200 bg-white p-5">
+    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Anual</p>
+    <p class="mt-1 text-2xl font-bold text-gray-900"><%= number_to_currency(@plan.annual_price_cents / 100.0, unit: "R$ ", separator: ",", delimiter: ".") %></p>
+  </div>
+</div>
+
+<div class="rounded-xl border border-gray-200 bg-white p-5 max-w-lg">
+  <h2 class="text-lg font-semibold text-gray-900 mb-3">Limites e Recursos</h2>
+  <dl class="space-y-3 text-sm">
+    <div class="flex justify-between">
+      <dt class="text-gray-600">Limite de Hospedagens</dt>
+      <dd class="font-semibold text-gray-900"><%= @plan.max_properties.present? ? @plan.max_properties : "Ilimitado" %></dd>
+    </div>
+  </dl>
+</div>
