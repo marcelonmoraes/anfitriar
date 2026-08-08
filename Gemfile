@@ -37,6 +37,9 @@ gem "thruster", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 1.2"
 
+# Rich text content [https://guides.rubyonrails.org/action_text_overview.html]
+gem "actiontext"
+
 # Traduções pt-BR para Active Record, Action View etc.
 gem "rails-i18n", "~> 8.0"
 

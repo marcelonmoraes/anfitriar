@@ -1,6 +1,20 @@
-<div class="mb-6 flex items-center justify-between">
-  <h1 class="text-2xl font-bold"><%= @property.name %></h1>
-  <div class="flex gap-2">
+<% progress = @property.guide_progress %>
+<% percentage = progress[:total].positive? ? (progress[:filled].to_f / progress[:total] * 100).round : 0 %>
+
+<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    <div class="flex items-center gap-2">
+      <%= link_to properties_path, class: "text-sm text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1" do %>
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+        </svg>
+        Hospedagens
+      <% end %>
+    </div>
+    <h1 class="mt-1 text-2xl font-bold tracking-tight text-gray-900"><%= @property.name %></h1>
+    <p class="mt-0.5 text-sm text-gray-600"><%= @property.address %></p>
+  </div>
+  <div class="flex flex-wrap gap-2 shrink-0">
     <%= link_to "Editar", edit_property_path(@property),
           class: "rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2" %>
     <%= button_to "Excluir", property_path(@property), method: :delete,
@@ -8,17 +22,32 @@
           form: { data: { turbo_confirm: "Excluir esta hospedagem e todo o seu guia?" } } %>
   </div>
 </div>
-<% if @property.cover_photo.attached? %>
-  <%= image_tag @property.cover_photo, alt: @property.name, class: "mb-4 h-56 w-full rounded-lg object-cover" %>
-<% end %>
-<p class="text-gray-600"><%= @property.address %></p>
 
-<% progress = @property.guide_progress %>
-<div class="mt-6 rounded-lg border border-gray-200 bg-white p-4">
-  <div class="flex flex-wrap items-center justify-between gap-3">
+<% if @property.cover_photo.attached? %>
+  <div class="mb-6 h-64 w-full overflow-hidden rounded-xl bg-gray-100 border border-gray-200">
+    <%= image_tag @property.cover_photo, alt: @property.name, class: "h-full w-full object-cover" %>
+  </div>
+<% end %>
+
+<% if @property.description.present? %>
+  <div class="mb-6 rounded-lg border border-gray-200 bg-white p-5">
+    <h2 class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Descrição interna</h2>
+    <div class="prose prose-sm max-w-none text-gray-700">
+      <%= @property.description %>
+    </div>
+  </div>
+<% end %>
+
+<div class="rounded-xl border border-gray-200 bg-white p-5">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
     <div>
-      <h2 class="font-semibold text-gray-900">Guia do hóspede</h2>
-      <p class="text-sm text-gray-600"><span class="font-semibold text-gray-900"><%= progress[:filled] %> de <%= progress[:total] %></span> categorias preenchidas</p>
+      <h2 class="text-lg font-semibold text-gray-900">Guia do hóspede</h2>
+      <p class="mt-0.5 text-sm text-gray-600">
+        <span class="font-semibold text-gray-900"><%= progress[:filled] %> de <%= progress[:total] %></span> categorias preenchidas (<%= percentage %>%)
+      </p>
+      <div class="mt-2.5 w-48 progress-bar">
+        <div class="progress-bar-fill" style="width: <%= percentage %>%"></div>
+      </div>
     </div>
     <div class="flex shrink-0 gap-2">
       <%= link_to "Ver como hóspede", property_preview_path(@property),

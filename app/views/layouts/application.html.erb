@@ -24,14 +24,21 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="min-h-screen bg-gray-50 text-gray-900">
-    <% if authenticated? %>
-      <%= render "layouts/nav" %>
-    <% end %>
-    <main class="mx-auto max-w-4xl px-4 py-8 sm:px-6">
-      <% if notice %><div class="mb-6 rounded-lg border border-green-100 bg-green-50 p-4 text-sm font-medium text-green-800"><%= notice %></div><% end %>
-      <% if alert %><div class="mb-6 rounded-lg border border-red-100 bg-red-50 p-4 text-sm font-medium text-red-800"><%= alert %></div><% end %>
-      <%= yield %>
-    </main>
+  <body class="min-h-screen bg-gray-50 text-gray-900 antialiased">
+    <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+    <div class="flex min-h-screen flex-col">
+      <% if authenticated? %>
+        <%= render "layouts/nav" %>
+      <% end %>
+      <main id="main-content" class="flex-1 mx-auto max-w-4xl w-full px-4 py-8 sm:px-6">
+        <%= render "shared/flash" %>
+        <%= yield %>
+      </main>
+      <footer class="border-t border-gray-200 bg-white py-4">
+        <div class="mx-auto max-w-4xl px-4 text-center text-xs text-gray-500">
+          Anfitriar &copy; <%= Time.current.year %>
+        </div>
+      </footer>
+    </div>
   </body>
 </html>

@@ -3,6 +3,7 @@ class Property < ApplicationRecord
   has_one_attached :cover_photo
   has_many :cards, dependent: :destroy
   has_many :bookings, dependent: :destroy
+  has_rich_text :description
 
   validates :name, :address, presence: true
   validate :within_plan_limit, on: :create

@@ -1,15 +1,28 @@
-<div class="mb-6 flex items-center justify-between">
-  <h1 class="text-2xl font-bold">Categorias</h1>
-  <%= link_to "Nova categoria", new_category_path,
-        class: "rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 active:bg-gray-950" %>
+<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight text-gray-900">Categorias</h1>
+    <p class="mt-1 text-sm text-gray-600">Gerencie as categorias do guia — padrão do sistema e suas próprias</p>
+  </div>
+  <%= link_to new_category_path,
+        class: "inline-flex items-center justify-center gap-2 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 active:bg-gray-950 shrink-0" do %>
+    <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+      <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+    </svg>
+    Nova categoria
+  <% end %>
 </div>
 
 <section aria-labelledby="standard-categories-heading" class="mb-8">
   <h2 id="standard-categories-heading" class="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">Padrão do sistema</h2>
-  <p class="mb-3 text-sm text-gray-500">Estas categorias existem em todas as contas. Você preenche a descrição de cada uma dentro de cada hospedagem — e pode ocultá-las por hospedagem, mas não excluí-las.</p>
+  <p class="mb-3 text-sm text-gray-500 max-w-2xl">
+    Estas categorias existem em todas as contas. Você preenche a descrição de cada uma dentro de cada hospedagem — e pode ocultá-las por hospedagem, mas não excluí-las.
+  </p>
   <ul class="grid gap-2 sm:grid-cols-2">
     <% @standard_categories.each do |category| %>
-      <li class="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm"><%= category.name %></li>
+      <li class="rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 font-medium hover:bg-gray-50 transition-colors">
+        <%= category.name %>
+        <span class="ml-2 inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">Padrão</span>
+      </li>
     <% end %>
   </ul>
 </section>
@@ -17,23 +30,38 @@
 <section aria-labelledby="own-categories-heading">
   <h2 id="own-categories-heading" class="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">Minhas categorias</h2>
   <% if @own_categories.none? %>
-    <p class="rounded-lg border border-dashed border-gray-300 p-8 text-center text-gray-500">
-      Crie categorias próprias para assuntos que só existem nas suas hospedagens.
-    </p>
+    <div class="rounded-lg border border-dashed border-gray-300 p-8 text-center bg-white">
+      <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-6.25 10.602a2.25 2.25 0 01-2.902.302L2.25 15.75l4.159-4.159a2.25 2.25 0 011.278-2.37l7.839-7.84a2.25 2.25 0 013.905 0l9.874 9.875c.858.858.858 2.25 0 3.108z" />
+        </svg>
+      </div>
+      <h3 class="text-sm font-semibold text-gray-900">Nenhuma categoria própria</h3>
+      <p class="mt-1 text-sm text-gray-500 max-w-sm mx-auto">
+        Crie categorias para assuntos que só existem nas suas hospedagens e reutilize em todas elas.
+      </p>
+      <div class="mt-4">
+        <%= link_to "Criar categoria", new_category_path,
+              class: "inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2" %>
+      </div>
+    </div>
   <% else %>
-    <ul class="grid gap-2 sm:grid-cols-2">
+    <ul class="space-y-2">
       <% @own_categories.each do |category| %>
-        <li class="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm">
-          <span><%= category.name %></span>
-          <span class="flex items-center gap-3">
-            <%= link_to "Editar", edit_category_path(category),
-                  class: "rounded font-medium text-gray-700 underline-offset-2 hover:underline focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2",
+        <li class="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm hover:bg-gray-50 transition-colors">
+          <div class="flex items-center gap-3">
+            <span class="font-medium text-gray-900"><%= category.name %></span>
+            <span class="shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">Sua categoria</span>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <%= link_to edit_category_path(category),
+                  class: "rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2",
                   aria: { label: "Editar #{category.name}" } %>
             <%= button_to "Excluir", category_path(category), method: :delete,
-                  class: "rounded font-medium text-red-700 underline-offset-2 hover:underline focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2",
+                  class: "rounded-lg px-3 py-1.5 text-sm font-medium text-red-600 hover:text-red-900 hover:bg-red-50 transition-colors focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2",
                   form: { class: "inline", data: { turbo_confirm: "Excluir esta categoria remove os cards dela em todas as hospedagens. Confirmar?" } },
                   aria: { label: "Excluir #{category.name}" } %>
-          </span>
+          </div>
         </li>
       <% end %>
     </ul>

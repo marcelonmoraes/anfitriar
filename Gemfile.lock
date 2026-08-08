@@ -393,6 +393,7 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
+  actiontext
   bcrypt (~> 3.1.7)
   bootsnap
   brakeman

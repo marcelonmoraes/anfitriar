@@ -20,3 +20,24 @@ end
   category = Category.standard.find_or_initialize_by(name: name)
   category.update!(position: index + 1)
 end
+
+# Host de desenvolvimento
+if Rails.env.development?
+  host = Host.find_or_initialize_by(email_address: "admin@anfitriar.local")
+  host.assign_attributes(
+    name: "Admin Desenvolvimento",
+    phone: "11999999999",
+    password: "senha123",
+    password_confirmation: "senha123"
+  )
+  host.save!
+
+  # Subscription trial Pro (7 dias)
+  pro_plan = Plan.find_by(slug: "pro")
+  Subscription.find_or_create_by!(host: host) do |sub|
+    sub.plan = pro_plan
+    sub.billing_cycle = "monthly"
+    sub.status = "trial"
+    sub.trial_ends_at = 7.days.from_now
+  end
+end

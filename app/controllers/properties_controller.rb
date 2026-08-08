@@ -43,6 +43,6 @@ class PropertiesController < ApplicationController
     end
 
     def property_params
-      params.expect(property: [ :name, :address, :cover_photo ])
+      params.expect(property: [ :name, :address, :description, :cover_photo ])
     end
 end

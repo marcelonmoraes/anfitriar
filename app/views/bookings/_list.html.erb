@@ -1,22 +1,26 @@
 <% if bookings.none? %>
-  <p class="rounded-lg border border-dashed border-gray-300 p-8 text-center text-gray-500">Nenhuma reserva aqui.</p>
+  <div class="rounded-lg border border-dashed border-gray-300 p-6 text-center bg-white">
+    <p class="text-sm text-gray-500">Nenhuma reserva aqui.</p>
+  </div>
 <% else %>
   <div class="space-y-2">
     <% bookings.each do |booking| %>
       <%= link_to booking_path(booking),
-            class: "flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 transition-shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2" do %>
+            class: "group flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3.5 transition-all hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2" do %>
         <div>
-          <p class="font-medium text-gray-900"><%= booking.guest.name %> — <%= booking.property.name %></p>
-          <p class="text-sm text-gray-500">
-            <%= l booking.check_in %> a <%= l booking.check_out %>
+          <p class="font-medium text-gray-900 group-hover:text-gray-700 transition-colors">
+            <%= booking.guest.name %> <span class="text-gray-400 font-normal">·</span> <%= booking.property.name %>
+          </p>
+          <p class="text-xs text-gray-500 mt-0.5">
+            <%= l booking.check_in, format: :short rescue booking.check_in %> a <%= l booking.check_out, format: :short rescue booking.check_out %>
           </p>
         </div>
         <% if booking.revoked? %>
-          <span class="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">Link revogado</span>
+          <span class="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">Link revogado</span>
         <% elsif booking.link_active? %>
-          <span class="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">Link ativo</span>
+          <span class="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">Link ativo</span>
         <% else %>
-          <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">Encerrada</span>
+          <span class="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">Encerrada</span>
         <% end %>
       <% end %>
     <% end %>

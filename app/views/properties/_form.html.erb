@@ -2,18 +2,38 @@
   <%= render "shared/form_errors", record: property %>
   <div>
     <%= f.label :name, class: "block text-sm font-medium text-gray-700" %>
-    <%= f.text_field :name, required: true, autofocus: true,
-          class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none sm:text-sm" %>
+    <%= f.text_field :name, required: true, autofocus: true, placeholder: "Ex: Casa da Praia",
+          class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none text-sm px-3.5 py-2.5" %>
   </div>
   <div>
     <%= f.label :address, class: "block text-sm font-medium text-gray-700" %>
-    <%= f.text_field :address, required: true,
-          class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none sm:text-sm" %>
+    <%= f.text_field :address, required: true, placeholder: "Endereço completo",
+          class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none text-sm px-3.5 py-2.5" %>
+  </div>
+  <div>
+    <%= f.label :description, class: "block text-sm font-medium text-gray-700" %>
+    <p class="mt-0.5 text-xs text-gray-500">Descreva a hospedagem para uso interno. Não aparece no guia.</p>
+    <div class="mt-1.5 trix-wrapper">
+      <%= f.rich_text_area :description %>
+    </div>
   </div>
   <div>
     <%= f.label :cover_photo, class: "block text-sm font-medium text-gray-700" %>
+    <p class="mt-0.5 text-xs text-gray-500">Aparece na listagem de hospedagens. Recomendado: 1200×600px.</p>
+    <% if property.persisted? && property.cover_photo.attached? %>
+      <div class="mt-1.5 mb-2 relative group w-fit">
+        <%= image_tag property.cover_photo, alt: property.name, class: "h-24 w-40 rounded-lg object-cover border border-gray-200" %>
+      </div>
+    <% end %>
     <%= f.file_field :cover_photo, accept: "image/*",
-          class: "mt-1.5 block w-full text-sm text-gray-700 file:mr-3 file:rounded-lg file:border-0 file:bg-gray-100 file:px-3 file:py-2 file:text-sm file:font-medium file:text-gray-700 hover:file:bg-gray-200" %>
+          class: "mt-1.5 block w-full text-sm text-gray-700 file:mr-3 file:rounded-lg file:border-0 file:bg-gray-100 file:px-3 file:py-2 file:text-sm file:font-medium file:text-gray-700 hover:file:bg-gray-200 file:cursor-pointer cursor-pointer" %>
   </div>
-  <%= f.submit class: "rounded-lg bg-gray-900 px-4 py-2.5 font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 active:bg-gray-950" %>
+  <div class="flex items-center gap-3 pt-2">
+    <%= f.submit class: "rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 active:bg-gray-950 cursor-pointer" %>
+    <% if property.persisted? %>
+      <%= link_to "Cancelar", property_path(property), class: "text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" %>
+    <% else %>
+      <%= link_to "Cancelar", properties_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" %>
+    <% end %>
+  </div>
 <% end %>

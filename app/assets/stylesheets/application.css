@@ -1,10 +1,181 @@
 /*
- * This is a manifest file that'll be compiled into application.css.
- *
- * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
- * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
- * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
- * depending on specificity.
- *
- * Consider organizing styles into separate files for maintainability.
+ * Global design tokens and component overrides for Anfitriar.
+ * Tailwind utilities handle most styling; this file covers
+ * cross-cutting concerns that can't be expressed in utility classes alone.
  */
+
+/* ─── Focus ring system ─── */
+:focus-visible {
+  outline: 2px solid #111827;
+  outline-offset: 2px;
+}
+
+/* ─── Typography smoothing ─── */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Trix / Action Text editor ─── */
+.trix-wrapper trix-toolbar {
+  background: #f9fafb;
+  border: 1px solid #d1d5db;
+  border-bottom: none;
+  border-radius: 0.5rem 0.5rem 0 0;
+  padding: 0.25rem 0.375rem;
+}
+
+.trix-wrapper trix-toolbar .trix-button-group {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  margin-bottom: 0;
+}
+
+.trix-wrapper trix-toolbar .trix-button {
+  background: transparent;
+  border: none;
+  color: #4b5563;
+  border-radius: 0.25rem;
+}
+
+.trix-wrapper trix-toolbar .trix-button:not(:disabled):hover {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.trix-wrapper trix-toolbar .trix-button.trix-active {
+  background: #111827;
+  color: #ffffff;
+}
+
+.trix-wrapper trix-editor {
+  min-height: 12rem;
+  border: 1px solid #d1d5db;
+  border-top: none;
+  border-radius: 0 0 0.5rem 0.5rem;
+  background: #ffffff;
+  color: #111827;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  padding: 0.75rem 1rem;
+  outline: none;
+}
+
+.trix-wrapper:focus-within trix-editor {
+  border-color: #111827;
+  box-shadow: 0 0 0 1px #111827;
+}
+
+.trix-wrapper:focus-within trix-toolbar {
+  border-color: #111827;
+}
+
+/* ─── Table base ─── */
+.table-base {
+  width: 100%;
+  font-size: 0.875rem;
+  border-collapse: collapse;
+}
+
+.table-base th {
+  background: #f9fafb;
+  color: #374151;
+  font-weight: 500;
+  text-align: left;
+  padding: 0.625rem 1rem;
+}
+
+.table-base td {
+  padding: 0.625rem 1rem;
+  color: #111827;
+  border-top: 1px solid #e5e7eb;
+}
+
+.table-base tr:hover td {
+  background: #f9fafb;
+}
+
+/* ─── Sortable drag handle ─── */
+[data-sortable-handle] {
+  cursor: grab;
+  touch-action: none;
+}
+
+[data-sortable-handle]:active {
+  cursor: grabbing;
+}
+
+.sortable-ghost {
+  opacity: 0.4;
+}
+
+.sortable-drag {
+  background: #ffffff;
+  border-color: #111827;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.08);
+}
+
+/* ─── Transition helpers ─── */
+.transition-standard {
+  transition-property: color, background-color, border-color, opacity, box-shadow, transform;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Progress bar ─── */
+.progress-bar {
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: #111827;
+  border-radius: 9999px;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Skip link for a11y ─── */
+.skip-link {
+  position: absolute;
+  left: 0.5rem;
+  top: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #111827;
+  color: #ffffff;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transform: translateY(-200%);
+  transition: transform 0.15s;
+  z-index: 100;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* ─── Nav link active state ─── */
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+/* ─── Reduced motion support ─── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .sortable-drag {
+    box-shadow: none;
+  }
+}
