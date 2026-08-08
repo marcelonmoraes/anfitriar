@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
   <head>
-    <title><%= content_for(:title) || "Anfitriar" %></title>
+    <title>Anfitriar</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Anfitriar">
@@ -20,12 +20,25 @@
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "actiontext", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
-      <%= yield %>
-    </main>
+  <body class="min-h-screen bg-gray-50 text-gray-900 antialiased">
+    <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+    <div class="flex min-h-screen flex-col">
+      <% if authenticated? %>
+        <%= render "layouts/nav" %>
+      <% end %>
+      <main id="main-content" class="flex-1 mx-auto max-w-4xl w-full px-4 py-8 sm:px-6">
+        <%= render "shared/flash" %>
+        <%= yield %>
+      </main>
+      <footer class="border-t border-gray-200 bg-white py-4">
+        <div class="mx-auto max-w-4xl px-4 text-center text-xs text-gray-500">
+          Anfitriar &copy; <%= Time.current.year %>
+        </div>
+      </footer>
+    </div>
   </body>
 </html>

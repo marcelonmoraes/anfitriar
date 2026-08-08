@@ -1,0 +1,6 @@
+Olá, <%= @host.name %>!
+
+Para redefinir sua senha no Anfitriar, acesse (válido por 15 minutos):
+<%= edit_password_url(@host.password_reset_token) %>
+
+Se você não pediu a redefinição, ignore este e-mail.

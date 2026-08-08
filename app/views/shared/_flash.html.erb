@@ -1,0 +1,21 @@
+<% if notice %>
+  <div class="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm" role="alert">
+    <div class="flex items-center gap-2">
+      <svg class="h-5 w-5 shrink-0 text-green-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+      </svg>
+      <p class="text-green-800 font-medium"><%= notice %></p>
+    </div>
+  </div>
+<% end %>
+
+<% if alert %>
+  <div class="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm" role="alert">
+    <div class="flex items-center gap-2">
+      <svg class="h-5 w-5 shrink-0 text-red-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-7a1 1 0 10-2 0v4a1 1 0 102 0v-4zm1-7a1 1 0 10-2 0v2a1 1 0 102 0V4z" clip-rule="evenodd" />
+      </svg>
+      <p class="text-red-800 font-medium"><%= alert %></p>
+    </div>
+  </div>
+<% end %>

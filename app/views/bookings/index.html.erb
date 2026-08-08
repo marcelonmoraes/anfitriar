@@ -1,0 +1,19 @@
+<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight text-gray-900">Reservas</h1>
+    <p class="mt-1 text-sm text-gray-600">Gerencie as reservas e envie os links de acesso aos hóspedes</p>
+  </div>
+  <%= link_to new_booking_path,
+        class: "inline-flex items-center justify-center gap-2 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 active:bg-gray-950 shrink-0" do %>
+    <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+      <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+    </svg>
+    Nova reserva
+  <% end %>
+</div>
+
+<h2 class="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">Ativas e futuras</h2>
+<%= render "list", bookings: @current_bookings %>
+
+<h2 class="mb-2 mt-8 text-sm font-semibold uppercase tracking-wide text-gray-500">Encerradas</h2>
+<%= render "list", bookings: @finished_bookings %>

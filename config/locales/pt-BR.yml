@@ -1,0 +1,41 @@
+pt-BR:
+  nav:
+    properties: "Hospedagens"
+    guests: "Clientes"
+    bookings: "Reservas"
+    categories: "Categorias"
+    account: "Conta"
+    logout: "Sair"
+  activerecord:
+    models:
+      host: "Anfitrião"
+      property: "Hospedagem"
+      guest: "Cliente"
+      booking: "Reserva"
+      category: "Categoria"
+      card: "Card"
+      plan: "Plano"
+      subscription: "Assinatura"
+    attributes:
+      host:
+        name: "Nome"
+        email_address: "E-mail"
+        phone: "Telefone"
+        password: "Senha"
+        password_confirmation: "Confirmação de senha"
+      property:
+        name: "Nome"
+        address: "Endereço"
+        cover_photo: "Foto de capa"
+      guest:
+        name: "Nome"
+        cpf: "CPF"
+        phone: "Telefone"
+        email: "E-mail"
+      booking:
+        property: "Hospedagem"
+        guest: "Cliente"
+        check_in: "Check-in"
+        check_out: "Check-out"
+      category:
+        name: "Nome"

@@ -1,0 +1,72 @@
+<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+  <div>
+    <div class="flex items-center gap-2">
+      <%= link_to bookings_path, class: "text-sm text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1" do %>
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+        </svg>
+        Reservas
+      <% end %>
+    </div>
+    <h1 class="mt-1 text-2xl font-bold tracking-tight text-gray-900">
+      Reserva — <%= @booking.guest.name %>
+    </h1>
+    <p class="mt-0.5 text-sm text-gray-600">
+      <%= @booking.property.name %> · <%= l @booking.check_in %> a <%= l @booking.check_out %>
+      · CPF <%= @booking.guest.masked_cpf %>
+    </p>
+  </div>
+</div>
+
+<div class="rounded-xl border border-gray-200 bg-white p-5">
+  <h2 class="text-lg font-semibold text-gray-900 mb-3">Link de acesso do hóspede</h2>
+
+  <% if @booking.revoked? %>
+    <div class="mb-4 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800" role="alert">
+      <svg class="h-5 w-5 shrink-0 text-red-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+      </svg>
+      <p>Este link foi revogado. Gere um novo para restaurar o acesso do hóspede.</p>
+    </div>
+  <% elsif !@booking.link_active? %>
+    <div class="mb-4 flex items-start gap-2 rounded-lg border border-gray-200 bg-gray-50 p-3 text-sm text-gray-600" role="note">
+      <svg class="h-5 w-5 shrink-0 text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clip-rule="evenodd" />
+      </svg>
+      <p>A janela de acesso desta reserva encerrou em <%= l @booking.accessible_until %>.</p>
+    </div>
+  <% else %>
+    <div class="mb-4 flex items-start gap-2 rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-800" role="note">
+      <svg class="h-5 w-5 shrink-0 text-green-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+      </svg>
+      <p>Link ativo. Válido até <%= l @booking.accessible_until %> (check-out + margem).</p>
+    </div>
+  <% end %>
+
+  <div class="flex gap-2" data-controller="clipboard">
+    <label for="booking_guide_link" class="sr-only">Link de acesso do hóspede</label>
+    <input type="text" id="booking_guide_link" readonly value="<%= guide_link_for(@booking) %>" data-clipboard-target="source"
+           class="w-full rounded-lg border-gray-300 bg-gray-50 text-sm px-3.5 py-2.5 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none font-mono">
+    <button type="button" data-action="clipboard#copy" data-clipboard-target="button"
+            class="shrink-0 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2">Copiar</button>
+  </div>
+
+  <div class="mt-4 flex flex-wrap gap-2 border-t border-gray-100 pt-4">
+    <%= link_to "Enviar por WhatsApp", whatsapp_share_url(@booking), target: "_blank", rel: "noopener noreferrer",
+          class: "inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2" %>
+    <%= link_to "Ver como hóspede", property_preview_path(@booking.property),
+          class: "rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2" %>
+    <% if @booking.revoked? %>
+      <%= button_to "Gerar novo link", reissue_booking_path(@booking), method: :patch,
+            class: "rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2" %>
+    <% else %>
+      <%= button_to "Revogar link", revoke_booking_path(@booking), method: :patch,
+            class: "rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2",
+            form: { data: { turbo_confirm: "O hóspede perderá o acesso imediatamente. Revogar?" } } %>
+      <%= button_to "Regenerar link", reissue_booking_path(@booking), method: :patch,
+            class: "rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2",
+            form: { data: { turbo_confirm: "O link atual deixará de funcionar. Continuar?" } } %>
+    <% end %>
+  </div>
+</div>
