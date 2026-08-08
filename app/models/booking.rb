@@ -41,7 +41,7 @@ class Booking < ApplicationRecord
     normalized_cpf = cpf.gsub(/\D/, "")
     normalized_phone = phone_last4.to_s.last(4)
 
-    guest.cpf == normalized_cpf && guest.phone.last(4) == normalized_phone
+    guest.cpf == normalized_cpf && guest.phone_last_digits(4) == normalized_phone
   end
 
   private

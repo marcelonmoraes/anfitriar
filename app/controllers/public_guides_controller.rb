@@ -26,7 +26,7 @@ class PublicGuidesController < ApplicationController
   private
 
   def set_booking
-    @booking = Booking.find_by(access_token: params[:token])
+    @booking = Booking.includes(:guest, property: :cards).find_by(access_token: params[:token])
   end
 
   def check_booking_validity
