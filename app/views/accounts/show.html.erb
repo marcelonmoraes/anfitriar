@@ -9,25 +9,19 @@
       <div>
         <div class="flex items-center gap-2">
           <span class="text-xs font-semibold uppercase tracking-wide text-gray-500">Plano atual</span>
-          <% if @subscription.trial? %>
-            <span class="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">Período de teste</span>
-          <% elsif @subscription.status == "active" %>
-            <span class="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">Ativa</span>
-          <% end %>
+          <%= render "subscriptions/status_badge", subscription: @subscription %>
         </div>
         <h2 class="mt-1 text-xl font-bold text-gray-900">Plano <%= @subscription.plan.name %></h2>
-        <p class="mt-1 text-sm text-gray-600">
-          Status: <strong class="text-gray-900"><%= subscription_status_label(@subscription) %></strong>
-          <% if @subscription.trial? %>
-            — <span class="font-medium text-gray-900"><%= @subscription.trial_days_left %> dias restantes</span>
-          <% end %>
-        </p>
+        <% if @subscription.trial? %>
+          <p class="mt-1 text-sm text-gray-600">
+            <%= pluralize(@subscription.trial_days_left, "dia restante", plural: "dias restantes") %> de teste
+          </p>
+        <% end %>
       </div>
-      <% if @subscription.trial? %>
-        <div class="shrink-0">
-          <p class="text-xs text-gray-500">Aproveite para cadastrar seus imóveis</p>
-        </div>
-      <% end %>
+      <div class="shrink-0">
+        <%= link_to "Ver assinatura", account_subscription_path,
+              class: "rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+      </div>
     </div>
   </div>
 <% end %>

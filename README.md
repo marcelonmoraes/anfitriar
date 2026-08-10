@@ -17,6 +17,14 @@ bin/dev
 
 ## Variáveis de ambiente
 
+Em desenvolvimento, copie o modelo e preencha:
+
+```bash
+cp .env.example .env
+```
+
+O `.env` é ignorado pelo Git. Em produção, defina as variáveis no servidor.
+
 ### Integração Asaas (assinaturas)
 
 | Variável | Obrigatória | Descrição |
