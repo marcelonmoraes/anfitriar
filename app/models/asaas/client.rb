@@ -23,45 +23,45 @@ module Asaas
 
     # -- Customers ----------------------------------------------------------
     def create_customer(attributes)
-      request(:post, "/customers", attributes)
+      request(:post, "/v3/customers", attributes)
     end
 
     def update_customer(customer_id, attributes)
-      request(:put, "/customers/#{customer_id}", attributes)
+      request(:put, "/v3/customers/#{customer_id}", attributes)
     end
 
     def find_customer(customer_id)
-      request(:get, "/customers/#{customer_id}")
+      request(:get, "/v3/customers/#{customer_id}")
     end
 
     # -- Credit cards -------------------------------------------------------
     def tokenize_credit_card(attributes)
-      request(:post, "/creditCard/tokenizeCreditCard", attributes)
+      request(:post, "/v3/creditCard/tokenizeCreditCard", attributes)
     end
 
     # -- Subscriptions ------------------------------------------------------
     def create_subscription(attributes)
-      request(:post, "/subscriptions", attributes)
+      request(:post, "/v3/subscriptions", attributes)
     end
 
     def update_subscription(subscription_id, attributes)
-      request(:put, "/subscriptions/#{subscription_id}", attributes)
+      request(:put, "/v3/subscriptions/#{subscription_id}", attributes)
     end
 
     def update_subscription_credit_card(subscription_id, attributes)
-      request(:put, "/subscriptions/#{subscription_id}/creditCard", attributes)
+      request(:put, "/v3/subscriptions/#{subscription_id}/creditCard", attributes)
     end
 
     def find_subscription(subscription_id)
-      request(:get, "/subscriptions/#{subscription_id}")
+      request(:get, "/v3/subscriptions/#{subscription_id}")
     end
 
     def cancel_subscription(subscription_id)
-      request(:delete, "/subscriptions/#{subscription_id}")
+      request(:delete, "/v3/subscriptions/#{subscription_id}")
     end
 
     def subscription_payments(subscription_id)
-      request(:get, "/subscriptions/#{subscription_id}/payments")
+      request(:get, "/v3/subscriptions/#{subscription_id}/payments")
     end
 
     private
@@ -69,14 +69,19 @@ module Asaas
         response = @connection.public_send(method, path, body)
         response.body
       rescue Faraday::UnauthorizedError, Faraday::ForbiddenError => e
+        Rails.logger.error("[Asaas] Auth error: #{e.response_status} #{e.response_body}")
         raise AuthenticationError.new("Credenciais Asaas inválidas.", status: e.response_status)
       rescue Faraday::ResourceNotFound => e
+        Rails.logger.error("[Asaas] Not found: #{e.response_status} #{e.response_body}")
         raise NotFoundError.new("Recurso não encontrado no Asaas.", status: e.response_status)
       rescue Faraday::BadRequestError, Faraday::UnprocessableEntityError => e
+        Rails.logger.error("[Asaas] Bad request: #{e.response_status} #{e.response_body}")
         raise InvalidRequestError.new(error_description(e), errors: error_list(e), status: e.response_status)
       rescue Faraday::TimeoutError, Faraday::ConnectionFailed => e
+        Rails.logger.error("[Asaas] Connection error: #{e.message}")
         raise ConnectionError.new("Não foi possível conectar ao Asaas: #{e.message}")
       rescue Faraday::Error => e
+        Rails.logger.error("[Asaas] Error: #{e.response_status} #{e.response_body}")
         raise Error.new(error_description(e), errors: error_list(e), status: e.response_status)
       end
 
@@ -97,7 +102,8 @@ module Asaas
       end
 
       def build_connection
-        Faraday.new(url: Configuration.base_url, headers: Configuration.headers) do |conn|
+        Faraday.new(url: Configuration.base_url.sub(%r{/v3\z}, "")) do |conn|
+          conn.headers = Configuration.headers
           conn.request :json
           conn.request :retry,
                        max: 2,

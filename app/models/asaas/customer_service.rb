@@ -24,12 +24,11 @@ module Asaas
         {
           name: host.name,
           email: host.email_address,
-          mobilePhone: host.phone,
+          mobilePhone: host.phone.gsub(/\D/, ""),
           cpfCnpj: host.cpf_cnpj,
           postalCode: host.postal_code,
           addressNumber: host.address_number,
           externalReference: host.id.to_s,
-          # Toda comunicação com o anfitrião é feita pelo Anfitriar.
           notificationDisabled: true
         }.compact_blank
       end

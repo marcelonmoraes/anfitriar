@@ -2,8 +2,8 @@
 
 module Asaas
   module Configuration
-    PRODUCTION_URL = "https://api.asaas.com/v3"
-    SANDBOX_URL = "https://api-sandbox.asaas.com/v3"
+    PRODUCTION_URL = "https://api.asaas.com"
+    SANDBOX_URL = "https://api-sandbox.asaas.com"
 
     class << self
       # Chave secreta: exclusiva do backend, nunca exposta em views.

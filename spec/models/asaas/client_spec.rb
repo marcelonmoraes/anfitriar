@@ -10,7 +10,16 @@ RSpec.describe Asaas::Client do
       conn.response :json
       conn.response :raise_error
       conn.adapter :test, stubs do |stub|
-        stub.post("/customers") { [ status, { "Content-Type" => "application/json" }, body ] }
+        stub.post("/v3/customers") { [ status, { "Content-Type" => "application/json" }, body ] }
+        stub.put("/v3/customers/1") { [ status, { "Content-Type" => "application/json" }, body ] }
+        stub.get("/v3/customers/1") { [ status, { "Content-Type" => "application/json" }, body ] }
+        stub.post("/v3/creditCard/tokenizeCreditCard") { [ status, { "Content-Type" => "application/json" }, body ] }
+        stub.post("/v3/subscriptions") { [ status, { "Content-Type" => "application/json" }, body ] }
+        stub.put("/v3/subscriptions/1") { [ status, { "Content-Type" => "application/json" }, body ] }
+        stub.put("/v3/subscriptions/1/creditCard") { [ status, { "Content-Type" => "application/json" }, body ] }
+        stub.get("/v3/subscriptions/1") { [ status, { "Content-Type" => "application/json" }, body ] }
+        stub.delete("/v3/subscriptions/1") { [ status, { "Content-Type" => "application/json" }, body ] }
+        stub.get("/v3/subscriptions/1/payments") { [ status, { "Content-Type" => "application/json" }, body ] }
       end
     end
 
