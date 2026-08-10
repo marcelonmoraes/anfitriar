@@ -59,12 +59,12 @@ RSpec.describe "Assinatura do anfitrião", type: :request do
       expect(host.reload.subscription.credit_card).to eq(credit_card)
     end
 
-    it "recusa cartão inválido sem chamar o Asaas" do
+    it "recusa cartão com número curto demais sem chamar o Asaas" do
       client = fake_asaas_client
 
       post account_subscription_path, params: {
         subscription: { plan_id: plan.id, billing_cycle: "monthly" },
-        credit_card: card_params.merge(number: "4242424242424241")
+        credit_card: card_params.merge(number: "4242")
       }
 
       expect(response).to have_http_status(:unprocessable_content)

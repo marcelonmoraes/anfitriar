@@ -74,6 +74,12 @@ pt-BR:
         expiry: "Validade"
         cvv: "CVV"
         document: "CPF/CNPJ do titular"
+      credit_card_form:
+        placeholders:
+          number: "0000 0000 0000 0000"
+          expiry: "MM/AA"
+          cvv: "123"
+          document: "Somente se diferente do seu cadastro"
       subscription:
         plan: "Plano"
         plan_id: "Plano"

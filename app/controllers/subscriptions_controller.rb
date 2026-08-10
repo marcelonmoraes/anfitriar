@@ -19,6 +19,9 @@ class SubscriptionsController < ApplicationController
 
   def create
     @subscription.assign_attributes(subscription_params)
+    @subscription.status = :pending
+    @subscription.trial_ends_at = nil
+    @subscription.current_period_start = Time.current
 
     unless @subscription.valid?
       return render_new(status: :unprocessable_content)
