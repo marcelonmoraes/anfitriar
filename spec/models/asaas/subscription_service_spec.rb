@@ -71,7 +71,7 @@ RSpec.describe Asaas::SubscriptionService do
       service(client).change_credit_card(subscription, novo, remote_ip: "203.0.113.10")
 
       expect(subscription.reload.credit_card).to eq(novo)
-      expect(client.payload_for(:update_subscription).last[:creditCardToken]).to eq(novo.asaas_token)
+      expect(client.payload_for(:update_subscription_credit_card).last[:creditCardToken]).to eq(novo.asaas_token)
     end
   end
 

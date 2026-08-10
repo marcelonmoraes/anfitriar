@@ -27,7 +27,7 @@ module Asaas
     end
 
     def update_customer(customer_id, attributes)
-      request(:post, "/customers/#{customer_id}", attributes)
+      request(:put, "/customers/#{customer_id}", attributes)
     end
 
     def find_customer(customer_id)
@@ -45,7 +45,11 @@ module Asaas
     end
 
     def update_subscription(subscription_id, attributes)
-      request(:post, "/subscriptions/#{subscription_id}", attributes)
+      request(:put, "/subscriptions/#{subscription_id}", attributes)
+    end
+
+    def update_subscription_credit_card(subscription_id, attributes)
+      request(:put, "/subscriptions/#{subscription_id}/creditCard", attributes)
     end
 
     def find_subscription(subscription_id)

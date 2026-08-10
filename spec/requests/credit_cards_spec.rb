@@ -50,7 +50,7 @@ RSpec.describe "Cartões do anfitrião", type: :request do
 
     expect(response).to redirect_to(account_credit_cards_path)
     expect(novo.reload).to be_default
-    expect(client).to be_called(:update_subscription)
+    expect(client).to be_called(:update_subscription_credit_card)
   end
 
   it "remove um cartão que não está em uso" do

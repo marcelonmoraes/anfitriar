@@ -32,7 +32,7 @@ module Asaas
     end
 
     def change_credit_card(subscription, credit_card, remote_ip:)
-      @client.update_subscription(subscription.asaas_subscription_id,
+      @client.update_subscription_credit_card(subscription.asaas_subscription_id,
         creditCardToken: credit_card.asaas_token,
         remoteIp: remote_ip
       )

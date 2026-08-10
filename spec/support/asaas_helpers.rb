@@ -41,6 +41,11 @@ class FakeAsaasClient
     { "id" => subscription_id }
   end
 
+  def update_subscription_credit_card(subscription_id, attributes)
+    record(:update_subscription_credit_card, [ subscription_id, attributes ])
+    { "id" => subscription_id }
+  end
+
   def cancel_subscription(subscription_id)
     record(:cancel_subscription, subscription_id)
     { "deleted" => true }
