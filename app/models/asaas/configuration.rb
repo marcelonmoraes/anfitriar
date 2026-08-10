@@ -11,11 +11,6 @@ module Asaas
         ENV.fetch("ASAAS_API_KEY")
       end
 
-      # Chave pública: usada pelo browser para tokenizar cartões.
-      def public_key
-        ENV.fetch("ASAAS_PUBLIC_KEY", nil)
-      end
-
       def webhook_secret
         ENV.fetch("ASAAS_WEBHOOK_SECRET")
       end

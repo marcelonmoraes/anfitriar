@@ -31,7 +31,6 @@ O `.env` é ignorado pelo Git. Em produção, defina as variáveis no servidor.
 |---|---|---|
 | `ASAAS_API_KEY` | sim | Chave de API. **Somente backend** — nunca exposta em views ou JS. |
 | `ASAAS_WEBHOOK_SECRET` | sim | Token de autenticação configurado no webhook do painel Asaas. Recebido no header `asaas-access-token`. |
-| `ASAAS_PUBLIC_KEY` | não | Chave pública, caso a tokenização passe a ser feita no browser. |
 | `ASAAS_ENVIRONMENT` | não | `production` usa a API real; qualquer outro valor usa o sandbox. Por padrão segue o `RAILS_ENV`. |
 
 O webhook deve apontar para `POST /webhooks/asaas` com os eventos
