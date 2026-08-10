@@ -4,6 +4,7 @@ class PublicGuidesController < ApplicationController
 
   before_action :set_booking
   before_action :check_booking_validity, only: %i[show verify verify_submit]
+  before_action :check_host_subscription, only: %i[show verify verify_submit]
   before_action :require_verification, only: %i[show]
 
   def show
@@ -26,13 +27,21 @@ class PublicGuidesController < ApplicationController
   private
 
   def set_booking
-    @booking = Booking.includes(:guest, property: :cards).find_by(access_token: params[:token])
+    @booking = Booking.includes(:guest, property: [ :cards, { host: :subscription } ])
+                      .find_by(access_token: params[:token])
   end
 
   def check_booking_validity
     return if @booking&.link_active?
 
     render :invalid_link, status: :not_found
+  end
+
+  # O guia sai do ar quando o anfitrião está sem trial válido nem assinatura ativa.
+  def check_host_subscription
+    return if @booking.property.host.subscription&.grants_access?
+
+    render :unavailable, status: :service_unavailable
   end
 
   def require_verification

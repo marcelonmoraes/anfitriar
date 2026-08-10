@@ -4,8 +4,40 @@ pt-BR:
     guests: "Clientes"
     bookings: "Reservas"
     categories: "Categorias"
+    subscription: "Assinatura"
     account: "Conta"
     logout: "Sair"
+  subscriptions:
+    cycles:
+      monthly: "Mensal"
+      quarterly: "Trimestral"
+      semiannual: "Semestral"
+      annual: "Anual"
+    statuses:
+      trial: "Período de teste"
+      pending: "Aguardando pagamento"
+      active: "Ativa"
+      past_due: "Pagamento pendente"
+      canceled: "Cancelada"
+    new:
+      already_active: "Você já possui uma assinatura ativa."
+    create:
+      created: "Assinatura criada! Assim que o pagamento for confirmado ela será ativada."
+      missing_billing_profile: "Complete seus dados de cobrança (CPF/CNPJ, CEP e número) antes de assinar."
+    update:
+      updated: "Plano atualizado com sucesso."
+    destroy:
+      canceled: "Assinatura cancelada."
+  credit_cards:
+    create:
+      created: "Cartão adicionado com sucesso."
+      missing_billing_profile: "Complete seus dados de cobrança (CPF/CNPJ, CEP e número) antes de cadastrar um cartão."
+    destroy:
+      destroyed: "Cartão removido."
+      in_use: "Este cartão está sendo usado pela sua assinatura ativa."
+    defaults:
+      create:
+        created: "Cartão definido como padrão."
   activerecord:
     models:
       host: "Anfitrião"
@@ -16,6 +48,8 @@ pt-BR:
       card: "Card"
       plan: "Plano"
       subscription: "Assinatura"
+      credit_card: "Cartão"
+      credit_card_form: "Cartão"
     attributes:
       host:
         name: "Nome"
@@ -23,6 +57,19 @@ pt-BR:
         phone: "Telefone"
         password: "Senha"
         password_confirmation: "Confirmação de senha"
+        cpf_cnpj: "CPF/CNPJ"
+        postal_code: "CEP"
+        address_number: "Número"
+      credit_card_form:
+        holder_name: "Nome impresso no cartão"
+        number: "Número do cartão"
+        expiry: "Validade"
+        cvv: "CVV"
+        document: "CPF/CNPJ do titular"
+      subscription:
+        plan: "Plano"
+        plan_id: "Plano"
+        billing_cycle: "Ciclo de cobrança"
       property:
         name: "Nome"
         address: "Endereço"

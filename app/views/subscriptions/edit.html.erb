@@ -1,0 +1,54 @@
+<% content_for :title, "Mudar de plano — Anfitriar" %>
+
+<div class="mx-auto max-w-2xl">
+  <header class="mb-8">
+    <h1 class="text-2xl font-bold tracking-tight text-gray-900">Mudar de plano</h1>
+    <p class="mt-1 text-sm text-gray-600">
+      A alteração vale a partir da próxima cobrança, no mesmo cartão já cadastrado.
+    </p>
+  </header>
+
+  <%= form_with model: @subscription, url: account_subscription_path, method: :patch, class: "space-y-6" do |form| %>
+    <%= render "shared/form_errors", record: @subscription %>
+
+    <section class="rounded-xl border border-gray-200 bg-white p-5">
+      <h2 class="text-lg font-semibold text-gray-900">Plano</h2>
+
+      <fieldset class="mt-4 space-y-3">
+        <legend class="sr-only">Escolha o plano</legend>
+        <% @plans.each do |plan| %>
+          <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-gray-200 p-4 transition-colors hover:border-gray-400 has-[:checked]:border-gray-900 has-[:checked]:bg-gray-50">
+            <%= form.radio_button :plan_id, plan.id, class: "mt-1 h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" %>
+            <span class="flex-1">
+              <span class="block font-medium text-gray-900"><%= plan.name %></span>
+              <span class="block text-sm text-gray-500">
+                <%= number_to_currency(plan.monthly_price_cents / 100.0) %> por mês
+              </span>
+            </span>
+          </label>
+        <% end %>
+      </fieldset>
+    </section>
+
+    <section class="rounded-xl border border-gray-200 bg-white p-5">
+      <h2 class="text-lg font-semibold text-gray-900">Ciclo de cobrança</h2>
+
+      <fieldset class="mt-4 grid gap-3 sm:grid-cols-2">
+        <legend class="sr-only">Escolha o ciclo de cobrança</legend>
+        <% Subscription::CYCLES.each do |cycle| %>
+          <label class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 p-4 transition-colors hover:border-gray-400 has-[:checked]:border-gray-900 has-[:checked]:bg-gray-50">
+            <%= form.radio_button :billing_cycle, cycle, class: "h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900" %>
+            <span class="font-medium text-gray-900"><%= t("subscriptions.cycles.#{cycle}") %></span>
+          </label>
+        <% end %>
+      </fieldset>
+    </section>
+
+    <div class="flex items-center justify-end gap-3">
+      <%= link_to "Cancelar", account_subscription_path,
+            class: "rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900" %>
+      <%= form.submit "Salvar alterações",
+            class: "rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800" %>
+    </div>
+  <% end %>
+</div>

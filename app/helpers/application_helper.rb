@@ -13,18 +13,18 @@ module ApplicationHelper
 
   def category_icon(name)
     icon = case name.downcase
-           when /wi.?fi|internet/ then "📶"
-           when /check.?in|check.?out|chegada|saída/ then "🔑"
-           when /como chegar|localização|endereço|mapa/ then "📍"
-           when /regras|conduta|proibido/ then "📋"
-           when /manual|casa|aparelho|eletro/ then "📖"
-           when /telefone|útil|emergência|bombeiro|polícia|samu/ then "📞"
-           when /restaurante|comida|delivery|comer/ then "🍽️"
-           when /mercado|farmácia|farmacia|compras/ then "🛒"
-           when /passeio|atração|turismo|praia|trilha/ then "🏖️"
-           when /transporte|uber|ônibus|onibus|metro|trem/ then "🚌"
-           else "📄"
-           end
+    when /wi.?fi|internet/ then "📶"
+    when /check.?in|check.?out|chegada|saída/ then "🔑"
+    when /como chegar|localização|endereço|mapa/ then "📍"
+    when /regras|conduta|proibido/ then "📋"
+    when /manual|casa|aparelho|eletro/ then "📖"
+    when /telefone|útil|emergência|bombeiro|polícia|samu/ then "📞"
+    when /restaurante|comida|delivery|comer/ then "🍽️"
+    when /mercado|farmácia|farmacia|compras/ then "🛒"
+    when /passeio|atração|turismo|praia|trilha/ then "🏖️"
+    when /transporte|uber|ônibus|onibus|metro|trem/ then "🚌"
+    else "📄"
+    end
     content_tag(:span, icon, class: "text-lg", aria_hidden: "true")
   end
 end

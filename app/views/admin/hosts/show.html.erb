@@ -13,7 +13,7 @@
   </div>
 </div>
 
-<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5 mb-8">
   <article class="rounded-xl border border-gray-200 bg-white p-5">
     <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Hospedagens</p>
     <p class="mt-1 text-3xl font-bold text-gray-900"><%= @properties_count %></p>
@@ -51,39 +51,46 @@
       <% end %>
     </div>
   </article>
+
+
+  <article class="rounded-xl border border-gray-200 bg-white p-5">
+    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Asaas</p>
+    <div class="mt-1 flex items-center gap-2">
+      <% if @host.asaas_customer_id.present? %>
+        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-800">
+          Conectado
+        </span>
+      <% else %>
+        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-gray-100 text-gray-600">
+          Não vinculado
+        </span>
+      <% end %>
+    </div>
+  </article>
 </div>
 
 <% if @subscription %>
   <section class="mb-8 rounded-xl border border-gray-200 bg-white p-5">
-    <div class="flex items-center justify-between mb-4">
+    <div class="mb-4 flex items-center justify-between">
       <h2 class="text-lg font-semibold text-gray-900">Detalhes da Assinatura</h2>
       <%= link_to "Editar Assinatura", edit_admin_host_subscription_path(@host),
             class: "rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2" %>
     </div>
 
-    <dl class="grid grid-cols-2 gap-4 text-sm">
+    <dl class="mb-4 grid grid-cols-2 gap-4 text-sm">
       <div>
         <dt class="text-gray-500">Plano</dt>
         <dd class="font-semibold text-gray-900"><%= @subscription.plan.name %></dd>
       </div>
       <div>
         <dt class="text-gray-500">Ciclo de Cobrança</dt>
-        <dd class="font-semibold text-gray-900"><%= @subscription.billing_cycle.present? ? @subscription.billing_cycle.humanize : "—" %></dd>
+        <dd class="font-semibold text-gray-900">
+          <%= @subscription.billing_cycle ? t("subscriptions.cycles.#{@subscription.billing_cycle}") : "—" %>
+        </dd>
       </div>
       <div>
         <dt class="text-gray-500">Status</dt>
-        <dd class="font-semibold text-gray-900">
-          <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
-            <%= case @subscription.status
-                when 'trial' then 'bg-blue-100 text-blue-800'
-                when 'active' then 'bg-green-100 text-green-800'
-                when 'past_due' then 'bg-yellow-100 text-yellow-800'
-                when 'canceled' then 'bg-gray-100 text-gray-700'
-                else 'bg-gray-100 text-gray-600'
-                end %>">
-            <%= @subscription.status.humanize %>
-          </span>
-        </dd>
+        <dd><%= render "subscriptions/status_badge", subscription: @subscription %></dd>
       </div>
       <div>
         <dt class="text-gray-500">Trial expira em</dt>
@@ -96,6 +103,82 @@
         </dd>
       </div>
     </dl>
+
+    <div class="mb-4 rounded-xl border border-gray-200 bg-gray-50 p-4">
+      <h3 class="mb-2 text-sm font-semibold text-gray-900">Dados Asaas</h3>
+      <dl class="grid grid-cols-2 gap-3 text-sm">
+        <div>
+          <dt class="text-gray-500">Customer ID</dt>
+          <dd class="font-mono text-gray-900"><%= @host.asaas_customer_id.presence || "—" %></dd>
+        </div>
+        <div>
+          <dt class="text-gray-500">Subscription ID</dt>
+          <dd class="font-mono text-gray-900"><%= @subscription.asaas_subscription_id.presence || "—" %></dd>
+        </div>
+        <div>
+          <dt class="text-gray-500">Cartão</dt>
+          <dd class="font-medium text-gray-900"><%= @subscription.credit_card&.to_s || "—" %></dd>
+        </div>
+        <div>
+          <dt class="text-gray-500">Período Atual</dt>
+          <dd class="font-semibold text-gray-900">
+            <% if @subscription.current_period_start && @subscription.current_period_end %>
+              <%= l @subscription.current_period_start.to_date %> a <%= l @subscription.current_period_end.to_date %>
+            <% else %>
+              —
+            <% end %>
+          </dd>
+        </div>
+      </dl>
+    </div>
+
+    <div>
+      <h3 class="mb-2 text-sm font-semibold text-gray-900">Últimos webhooks</h3>
+      <% if @webhook_events.any? %>
+        <ul class="divide-y divide-gray-200 rounded-xl border border-gray-200">
+          <% @webhook_events.each do |event| %>
+            <li class="flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-sm">
+              <div>
+                <p class="font-medium text-gray-900"><%= event.event_type %></p>
+                <p class="text-xs text-gray-500">
+                  <%= l event.created_at, format: :short %>
+                  <% if event.failed? %>
+                    · <span class="text-red-600"><%= event.error_message.truncate(80) %></span>
+                  <% elsif event.processed? %>
+                    · processado
+                  <% else %>
+                    · na fila
+                  <% end %>
+                </p>
+              </div>
+              <%= button_to "Reprocessar", admin_webhook_event_reprocessing_path(event),
+                    class: "rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50",
+                    form: { data: { turbo_confirm: "Reprocessar este webhook?" } } %>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="text-sm text-gray-500">Nenhum webhook recebido.</p>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="mb-8 rounded-xl border border-gray-200 bg-white p-5">
+    <h2 class="mb-4 text-lg font-semibold text-gray-900">Cartões</h2>
+    <% if @credit_cards.any? %>
+      <ul class="divide-y divide-gray-200 text-sm">
+        <% @credit_cards.each do |credit_card| %>
+          <li class="flex items-center justify-between py-2">
+            <span class="font-medium text-gray-900"><%= credit_card %></span>
+            <span class="text-gray-500">
+              expira <%= credit_card.expires_on %><%= " · padrão" if credit_card.default? %>
+            </span>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="text-sm text-gray-500">Nenhum cartão cadastrado.</p>
+    <% end %>
   </section>
 <% else %>
   <div class="mb-8 rounded-xl border border-dashed border-gray-300 p-6 text-center bg-white">

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_08_030213) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_10_120200) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -52,6 +52,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_030213) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "asaas_webhook_events", force: :cascade do |t|
+    t.string "asaas_event_id", null: false
+    t.datetime "created_at", null: false
+    t.text "error_message"
+    t.string "event_type", null: false
+    t.jsonb "payload", null: false
+    t.datetime "processed_at"
+    t.bigint "subscription_id"
+    t.datetime "updated_at", null: false
+    t.index ["asaas_event_id"], name: "index_asaas_webhook_events_on_asaas_event_id", unique: true
+    t.index ["event_type"], name: "index_asaas_webhook_events_on_event_type"
+    t.index ["processed_at"], name: "index_asaas_webhook_events_on_processed_at"
+    t.index ["subscription_id"], name: "index_asaas_webhook_events_on_subscription_id"
+  end
+
   create_table "bookings", force: :cascade do |t|
     t.string "access_token", null: false
     t.date "check_in", null: false
@@ -89,6 +104,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_030213) do
     t.index ["name"], name: "index_categories_on_name_standard_unique", unique: true, where: "(host_id IS NULL)"
   end
 
+  create_table "credit_cards", force: :cascade do |t|
+    t.string "asaas_token", null: false
+    t.string "brand", null: false
+    t.datetime "created_at", null: false
+    t.datetime "default_since"
+    t.integer "expiry_month", null: false
+    t.integer "expiry_year", null: false
+    t.string "holder_name", null: false
+    t.bigint "host_id", null: false
+    t.string "last_four", null: false
+    t.datetime "updated_at", null: false
+    t.index ["host_id", "asaas_token"], name: "index_credit_cards_on_host_id_and_asaas_token", unique: true
+    t.index ["host_id", "default_since"], name: "index_credit_cards_on_host_id_and_default_since"
+    t.index ["host_id"], name: "index_credit_cards_on_host_id"
+  end
+
   create_table "guests", force: :cascade do |t|
     t.string "cpf", null: false
     t.datetime "created_at", null: false
@@ -102,12 +133,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_030213) do
   end
 
   create_table "hosts", force: :cascade do |t|
+    t.string "address_number"
+    t.string "asaas_customer_id"
+    t.string "cpf_cnpj"
     t.datetime "created_at", null: false
     t.string "email_address", null: false
     t.string "name", null: false
     t.string "password_digest", null: false
     t.string "phone", null: false
+    t.string "postal_code"
     t.datetime "updated_at", null: false
+    t.index ["asaas_customer_id"], name: "index_hosts_on_asaas_customer_id", unique: true
     t.index ["email_address"], name: "index_hosts_on_email_address", unique: true
   end
 
@@ -160,27 +196,38 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_030213) do
   end
 
   create_table "subscriptions", force: :cascade do |t|
+    t.string "asaas_subscription_id"
     t.string "billing_cycle"
+    t.datetime "canceled_at"
+    t.string "canceled_by"
     t.datetime "created_at", null: false
+    t.bigint "credit_card_id"
+    t.datetime "current_period_end"
+    t.datetime "current_period_start"
     t.bigint "host_id", null: false
     t.bigint "plan_id", null: false
     t.string "status", default: "trial", null: false
     t.datetime "trial_ends_at"
     t.datetime "updated_at", null: false
+    t.index ["asaas_subscription_id"], name: "index_subscriptions_on_asaas_subscription_id_unique", unique: true
+    t.index ["credit_card_id"], name: "index_subscriptions_on_credit_card_id"
     t.index ["host_id"], name: "index_subscriptions_on_host_id", unique: true
     t.index ["plan_id"], name: "index_subscriptions_on_plan_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "asaas_webhook_events", "subscriptions"
   add_foreign_key "bookings", "guests"
   add_foreign_key "bookings", "properties"
   add_foreign_key "cards", "categories"
   add_foreign_key "cards", "properties"
   add_foreign_key "categories", "hosts"
+  add_foreign_key "credit_cards", "hosts"
   add_foreign_key "guests", "hosts"
   add_foreign_key "properties", "hosts"
   add_foreign_key "sessions", "hosts"
+  add_foreign_key "subscriptions", "credit_cards"
   add_foreign_key "subscriptions", "hosts"
   add_foreign_key "subscriptions", "plans"
 end

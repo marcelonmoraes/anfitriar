@@ -16,6 +16,8 @@ class Admin::HostsController < Admin::ApplicationController
 
   def show
     @subscription = @host.subscription
+    @credit_cards = @host.credit_cards.default_first
+    @webhook_events = AsaasWebhookEvent.where(subscription: @subscription).recent.limit(10)
     @properties_count = @host.properties.count
     @guests_count = @host.guests.count
 
