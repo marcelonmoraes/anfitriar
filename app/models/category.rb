@@ -11,6 +11,13 @@ class Category < ApplicationRecord
     standard.ordered + where(host: host).order(:name)
   end
 
+  # As categorias padrão são idênticas para todos os anfitriões e mudam apenas
+  # pelo Admin. Cachear por requisição evita repetir a mesma consulta uma vez
+  # por anfitrião nas listagens.
+  def self.standard_ordered
+    Current.standard_categories ||= standard.ordered.to_a
+  end
+
   def standard?
     host_id.nil?
   end

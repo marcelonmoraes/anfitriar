@@ -56,10 +56,10 @@
             <td class="px-4 py-3 tabular-nums text-gray-600"><%= plan.max_properties.present? ? plan.max_properties : "Ilimitado" %></td>
             <td class="px-4 py-3 text-right">
               <div class="flex items-center justify-end gap-2">
-                <%= link_to admin_plan_path(plan),
+                <%= link_to "Ver", admin_plan_path(plan),
                       class: "rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2",
                       aria: { label: "Ver #{plan.name}" } %>
-                <%= link_to edit_admin_plan_path(plan),
+                <%= link_to "Editar", edit_admin_plan_path(plan),
                       class: "rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2",
                       aria: { label: "Editar #{plan.name}" } %>
                 <%= button_to "Excluir", admin_plan_path(plan), method: :delete,

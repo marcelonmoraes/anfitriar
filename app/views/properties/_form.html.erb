@@ -22,7 +22,7 @@
     <p class="mt-0.5 text-xs text-gray-500">Aparece na listagem de hospedagens. Recomendado: 1200×600px.</p>
     <% if property.persisted? && property.cover_photo.attached? %>
       <div class="mt-1.5 mb-2 relative group w-fit">
-        <%= image_tag property.cover_photo, alt: property.name, class: "h-24 w-40 rounded-lg object-cover border border-gray-200" %>
+        <%= image_tag property.cover_photo, alt: property.name, loading: "lazy", decoding: "async", class: "h-24 w-40 rounded-lg object-cover border border-gray-200" %>
       </div>
     <% end %>
     <%= f.file_field :cover_photo, accept: "image/*",

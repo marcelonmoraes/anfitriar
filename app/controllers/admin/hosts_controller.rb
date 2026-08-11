@@ -2,7 +2,10 @@ class Admin::HostsController < Admin::ApplicationController
   before_action :set_host, only: %i[show]
 
   def index
-    @hosts = Host.includes(subscription: :plan).order(created_at: :desc)
+    @hosts = Host
+      .includes(:guests, :categories, { subscription: :plan },
+                { properties: { cards: [ :category, :rich_text_description ] } })
+      .order(created_at: :desc)
 
     if params[:status].present?
       @hosts = @hosts.joins(:subscription).where(subscriptions: { status: params[:status] })
@@ -22,13 +25,7 @@ class Admin::HostsController < Admin::ApplicationController
     @guests_count = @host.guests.count
 
     # Analytics sem conteúdo: % média de preenchimento dos guias
-    properties = @host.properties.includes(:cards)
-    if properties.any?
-      total_progress = properties.map { |p| p.guide_progress }.sum { |prog| prog[:total].positive? ? (prog[:filled].to_f / prog[:total] * 100) : 0 }
-      @avg_guide_progress = (total_progress / properties.size).round
-    else
-      @avg_guide_progress = 0
-    end
+    @avg_guide_progress = @host.average_guide_completion
   end
 
   private

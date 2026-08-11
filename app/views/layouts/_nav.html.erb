@@ -1,19 +1,51 @@
 <nav class="border-b border-gray-200 bg-white sticky top-0 z-40" aria-label="Navegação principal">
-  <div class="mx-auto flex max-w-4xl items-center justify-between px-4 py-3">
-    <a href="<%= properties_path %>" class="text-lg font-semibold tracking-tight text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 rounded-md" aria-label="Anfitriar - Início">
-      Anfitriar
-    </a>
-    <div class="flex items-center gap-1 text-sm overflow-x-auto pb-1" role="menubar">
-      <%= nav_link t("nav.properties"), properties_path, "nav-properties" %>
-      <%= nav_link t("nav.guests"), guests_path, "nav-guests" %>
-      <%= nav_link t("nav.bookings"), bookings_path, "nav-bookings" %>
-      <%= nav_link t("nav.categories"), categories_path, "nav-categories" %>
-      <%= nav_link t("nav.subscription"), account_subscription_path, "nav-subscription" %>
-      <%= nav_link t("nav.account"), account_path, "nav-account" %>
+  <div class="mx-auto max-w-4xl px-4">
+    <details class="group sm:hidden" data-controller="nav-menu" data-action="toggle->nav-menu#toggled">
+      <summary class="flex cursor-pointer list-none items-center justify-between py-3 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 rounded-md">
+        <span class="text-lg font-semibold tracking-tight text-gray-900">Anfitriar</span>
+        <span class="flex h-11 w-11 items-center justify-center rounded-lg text-gray-600 transition-colors group-open:bg-gray-100 group-open:text-gray-900">
+          <span class="sr-only">Abrir menu de navegação</span>
+          <svg class="h-5 w-5 group-open:hidden" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
+          </svg>
+          <svg class="hidden h-5 w-5 group-open:block" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </span>
+      </summary>
+      <div class="border-t border-gray-100 pb-3 pt-2">
+        <ul class="flex flex-col">
+          <li><%= nav_link_mobile t("nav.properties"), properties_path, "nav-properties-mobile" %></li>
+          <li><%= nav_link_mobile t("nav.guests"), guests_path, "nav-guests-mobile" %></li>
+          <li><%= nav_link_mobile t("nav.bookings"), bookings_path, "nav-bookings-mobile" %></li>
+          <li><%= nav_link_mobile t("nav.categories"), categories_path, "nav-categories-mobile" %></li>
+          <li><%= nav_link_mobile t("nav.subscription"), account_subscription_path, "nav-subscription-mobile" %></li>
+          <li><%= nav_link_mobile t("nav.account"), account_path, "nav-account-mobile" %></li>
+          <li class="mt-1 border-t border-gray-100 pt-1">
+            <%= button_to t("nav.logout"), session_path, method: :delete,
+                  class: "w-full rounded-lg px-3 py-3 text-left text-sm font-medium text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2",
+                  form: { class: "contents" } %>
+          </li>
+        </ul>
+      </div>
+    </details>
 
-      <%= button_to t("nav.logout"), session_path, method: :delete,
-            class: "nav-link text-gray-500 hover:text-gray-900 px-3 py-1.5 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2",
-            form: { class: "contents" } %>
+    <div class="hidden items-center justify-between py-3 sm:flex">
+      <a href="<%= properties_path %>" class="text-lg font-semibold tracking-tight text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 rounded-md" aria-label="Anfitriar - Início">
+        Anfitriar
+      </a>
+      <div class="flex items-center gap-1 text-sm">
+        <%= nav_link t("nav.properties"), properties_path, "nav-properties" %>
+        <%= nav_link t("nav.guests"), guests_path, "nav-guests" %>
+        <%= nav_link t("nav.bookings"), bookings_path, "nav-bookings" %>
+        <%= nav_link t("nav.categories"), categories_path, "nav-categories" %>
+        <%= nav_link t("nav.subscription"), account_subscription_path, "nav-subscription" %>
+        <%= nav_link t("nav.account"), account_path, "nav-account" %>
+
+        <%= button_to t("nav.logout"), session_path, method: :delete,
+              class: "nav-link text-gray-500 hover:text-gray-900 px-3 py-1.5 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2",
+              form: { class: "contents" } %>
+      </div>
     </div>
   </div>
 </nav>

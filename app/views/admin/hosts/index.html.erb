@@ -71,16 +71,12 @@
                 <span class="text-gray-400">Sem assinatura</span>
               <% end %>
             </td>
-            <td class="px-4 py-3 tabular-nums text-gray-600"><%= host.properties.count %></td>
-            <td class="px-4 py-3 tabular-nums text-gray-600"><%= host.guests.count %></td>
-            <td class="px-4 py-3 tabular-nums text-gray-600">
-              <% total_progress = host.properties.map { |p| p.guide_progress }.sum { |prog| prog[:total].positive? ? (prog[:filled].to_f / prog[:total] * 100) : 0 } %>
-              <% avg = host.properties.any? ? (total_progress / host.properties.size).round : 0 %>
-              <%= avg %>%
-            </td>
+            <td class="px-4 py-3 tabular-nums text-gray-600"><%= host.properties.size %></td>
+            <td class="px-4 py-3 tabular-nums text-gray-600"><%= host.guests.size %></td>
+            <td class="px-4 py-3 tabular-nums text-gray-600"><%= host.average_guide_completion %>%</td>
             <td class="px-4 py-3 text-gray-500"><%= host.updated_at ? l(host.updated_at, format: :short) : "—" %></td>
             <td class="px-4 py-3 text-right">
-              <%= link_to admin_host_path(host),
+              <%= link_to "Ver", admin_host_path(host),
                     class: "rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2",
                     aria: { label: "Ver #{host.name}" } %>
             </td>

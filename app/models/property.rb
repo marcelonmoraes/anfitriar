@@ -10,14 +10,21 @@ class Property < ApplicationRecord
 
   def guide_entries
     existing = cards.by_position.includes(:category, :rich_text_description).to_a
-    remaining = Category.available_to(host) - existing.map(&:category)
+    remaining = host.available_categories - existing.map(&:category)
     existing.map { |card| [ card.category, card ] } + remaining.map { |category| [ category, nil ] }
   end
 
   def guide_progress
-    categories = Category.available_to(host)
-    filled = cards.includes(:category, :rich_text_description).filter(&:filled?).count { |card| categories.include?(card.category) }
+    categories = host.available_categories
+    filled = cards.filter(&:filled?).count { |card| categories.include?(card.category) }
     { filled: filled, total: categories.size }
+  end
+
+  def guide_completion_percentage
+    progress = guide_progress
+    return 0 unless progress[:total].positive?
+
+    progress[:filled].to_f / progress[:total] * 100
   end
 
   def visible_cards

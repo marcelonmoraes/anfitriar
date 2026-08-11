@@ -44,6 +44,10 @@ RSpec.configure do |config|
 
   config.include FactoryBot::Syntax::Methods
 
+  # Fora de uma requisição, o Rails não reseta Current entre exemplos. Sem isto,
+  # sessão e caches por requisição vazam de um teste para o outro.
+  config.before { Current.reset }
+
   # You can uncomment this line to turn off ActiveRecord support entirely.
   # config.use_active_record = false
 

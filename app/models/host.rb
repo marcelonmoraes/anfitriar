@@ -22,6 +22,23 @@ class Host < ApplicationRecord
             allow_blank: true
   validates :postal_code, format: { with: /\A\d{8}\z/, message: "deve ter 8 dígitos" }, allow_blank: true
 
+  # Memoizado para que listagens com muitas hospedagens não repitam a consulta
+  # de categorias uma vez por hospedagem. Usa a associação já pré-carregada
+  # quando existe, evitando uma ida ao banco por anfitrião.
+  def available_categories
+    @available_categories ||=
+      Category.standard_ordered + categories.sort_by { |category| category.name.to_s }
+  end
+
+  # Média de preenchimento dos guias, em porcentagem. Calculada aqui para que a
+  # listagem do admin consiga pré-carregar cards e categorias numa consulta só.
+  def average_guide_completion
+    return 0 if properties.empty?
+
+    total = properties.sum { |property| property.guide_completion_percentage }
+    (total / properties.size).round
+  end
+
   # Dados que o Asaas exige para tokenizar um cartão em nome do anfitrião.
   def billing_profile_complete?
     cpf_cnpj.present? && postal_code.present? && address_number.present?

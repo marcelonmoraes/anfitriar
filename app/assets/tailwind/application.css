@@ -1,1 +1,81 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/*
+ * O preflight do Tailwind v4 zera a largura de borda de todos os elementos
+ * (`border: 0 solid`). As classes `border-gray-300` definem apenas a cor,
+ * então campos de formulário ficavam sem contorno visível. Restauramos a
+ * borda de 1px como padrão dos controles de formulário — utilitários de
+ * largura aplicados no elemento continuam sobrescrevendo este valor.
+ */
+@layer base {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="submit"]):not([type="button"]):not([type="reset"]),
+  select,
+  textarea {
+    border-width: 1px;
+  }
+}
+
+/*
+ * Em dispositivos de toque, o alvo mínimo é 44px (WCAG 2.5.5). O anfitrião
+ * usa desktop com mouse, onde a densidade menor é proposital — por isso a
+ * regra vale só para ponteiro grosso, e não a `@media (max-width)`.
+ */
+@media (pointer: coarse) {
+  a[class*="rounded-lg"],
+  button:not([data-trix-button-group] button),
+  input[type="submit"],
+  summary {
+    min-height: 44px;
+  }
+
+  a[class*="rounded-lg"],
+  input[type="submit"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/*
+ * O CSS do Action Text aplica `.trix-content * { margin: 0 }`, que vence o
+ * plugin typography por especificidade e faz os parágrafos do guia colarem
+ * uns nos outros. Restauramos o ritmo vertical do conteúdo do anfitrião
+ * dentro de `.prose`, respeitando a escala do design system.
+ */
+.prose .trix-content > * > * + * {
+  margin-top: 1em;
+}
+
+.prose .trix-content ul,
+.prose .trix-content ol {
+  padding-left: 1.625em;
+}
+
+.prose .trix-content li + li {
+  margin-top: 0.375em;
+}
+
+.prose .trix-content h1,
+.prose .trix-content h2 {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+}
+
+.prose .trix-content h1:first-child,
+.prose .trix-content h2:first-child {
+  margin-top: 0;
+}
+
+.prose .trix-content blockquote {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  padding-left: 1em;
+}
+
+.prose .trix-content a {
+  color: var(--color-gray-900);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

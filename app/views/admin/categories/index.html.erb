@@ -38,10 +38,10 @@
           <span class="px-2 py-0.5 text-xs font-medium uppercase tracking-wide rounded-full bg-blue-100 text-blue-800">Padrão</span>
         </div>
         <div class="flex items-center gap-2 shrink-0">
-          <%= link_to admin_category_path(category),
+          <%= link_to "Ver", admin_category_path(category),
                 class: "rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2",
                 aria: { label: "Ver #{category.name}" } %>
-          <%= link_to edit_admin_category_path(category),
+          <%= link_to "Editar", edit_admin_category_path(category),
                 class: "rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2",
                 aria: { label: "Editar #{category.name}" } %>
           <%= button_to "Excluir", admin_category_path(category), method: :delete,
