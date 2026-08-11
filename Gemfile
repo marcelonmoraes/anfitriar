@@ -54,6 +54,9 @@ group :development, :test do
   gem "factory_bot_rails"
   gem "capybara"
 
+  # Carrega variáveis de ambiente do .env fora de produção.
+  gem "dotenv-rails"
+
   # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
   gem "bundler-audit", require: false
 
@@ -68,3 +71,6 @@ group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
 end
+
+gem "faraday", "~> 2.14"
+gem "faraday-retry", "~> 2.4"

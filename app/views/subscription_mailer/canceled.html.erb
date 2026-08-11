@@ -1,0 +1,12 @@
+<p>Olá, <%= @host.name %>!</p>
+
+<p>
+  Sua assinatura do plano <strong><%= @subscription.plan.name %></strong> foi cancelada
+  e seus guias não estão mais acessíveis aos hóspedes.
+</p>
+
+<p>Você pode reativar quando quiser, sem perder nenhum dado.</p>
+
+<p><%= link_to "Reativar assinatura", new_account_subscription_url %></p>
+
+<p>Equipe Anfitriar</p>

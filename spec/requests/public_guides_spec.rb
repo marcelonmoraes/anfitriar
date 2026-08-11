@@ -2,6 +2,7 @@ require "rails_helper"
 
 RSpec.describe "Rota pública do guia", type: :request do
   let!(:host) { create(:host) }
+  let!(:subscription) { create(:subscription, host: host) }
   let!(:property) { create(:property, host: host) }
   let!(:guest) { create(:guest, host: host, cpf: "39053344705", phone: "11912345678") }
   let!(:booking) { create(:booking, property: property, guest: guest, check_in: Date.current - 1, check_out: Date.current + 3) }

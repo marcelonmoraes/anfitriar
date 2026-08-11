@@ -49,10 +49,10 @@
           <tr class="hover:bg-gray-50 transition-colors">
             <td class="px-4 py-3 font-medium text-gray-900"><%= plan.name %></td>
             <td class="px-4 py-3 font-mono text-gray-600"><%= plan.slug %></td>
-            <td class="px-4 py-3 tabular-nums text-gray-600"><%= number_to_currency(plan.monthly_price_cents / 100.0, unit: "R$ ", separator: ",", delimiter: ".") %></td>
-            <td class="px-4 py-3 tabular-nums text-gray-600"><%= number_to_currency(plan.quarterly_price_cents / 100.0, unit: "R$ ", separator: ",", delimiter: ".") %></td>
-            <td class="px-4 py-3 tabular-nums text-gray-600"><%= number_to_currency(plan.semiannual_price_cents / 100.0, unit: "R$ ", separator: ",", delimiter: ".") %></td>
-            <td class="px-4 py-3 tabular-nums text-gray-600"><%= number_to_currency(plan.annual_price_cents / 100.0, unit: "R$ ", separator: ",", delimiter: ".") %></td>
+            <td class="px-4 py-3 tabular-nums text-gray-600"><%= number_to_currency(plan.monthly_price_cents / 100.0) %></td>
+            <td class="px-4 py-3 tabular-nums text-gray-600"><%= number_to_currency(plan.quarterly_price_cents / 100.0) %></td>
+            <td class="px-4 py-3 tabular-nums text-gray-600"><%= number_to_currency(plan.semiannual_price_cents / 100.0) %></td>
+            <td class="px-4 py-3 tabular-nums text-gray-600"><%= number_to_currency(plan.annual_price_cents / 100.0) %></td>
             <td class="px-4 py-3 tabular-nums text-gray-600"><%= plan.max_properties.present? ? plan.max_properties : "Ilimitado" %></td>
             <td class="px-4 py-3 text-right">
               <div class="flex items-center justify-end gap-2">

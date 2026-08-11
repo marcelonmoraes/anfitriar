@@ -1,0 +1,15 @@
+<p>Olá, <%= @host.name %>!</p>
+
+<p>
+  Não conseguimos processar a cobrança do seu plano
+  <strong><%= @subscription.plan.name %></strong>.
+</p>
+
+<p>
+  Para manter seus guias no ar, atualize o cartão cadastrado. Vamos tentar novamente
+  automaticamente nos próximos dias.
+</p>
+
+<p><%= link_to "Atualizar forma de pagamento", account_credit_cards_url %></p>
+
+<p>Equipe Anfitriar</p>

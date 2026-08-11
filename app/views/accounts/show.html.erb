@@ -9,25 +9,19 @@
       <div>
         <div class="flex items-center gap-2">
           <span class="text-xs font-semibold uppercase tracking-wide text-gray-500">Plano atual</span>
-          <% if @subscription.trial? %>
-            <span class="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">Período de teste</span>
-          <% elsif @subscription.status == "active" %>
-            <span class="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">Ativa</span>
-          <% end %>
+          <%= render "subscriptions/status_badge", subscription: @subscription %>
         </div>
         <h2 class="mt-1 text-xl font-bold text-gray-900">Plano <%= @subscription.plan.name %></h2>
-        <p class="mt-1 text-sm text-gray-600">
-          Status: <strong class="text-gray-900"><%= subscription_status_label(@subscription) %></strong>
-          <% if @subscription.trial? %>
-            — <span class="font-medium text-gray-900"><%= @subscription.trial_days_left %> dias restantes</span>
-          <% end %>
-        </p>
+        <% if @subscription.trial? %>
+          <p class="mt-1 text-sm text-gray-600">
+            <%= pluralize(@subscription.trial_days_left, "dia restante", plural: "dias restantes") %> de teste
+          </p>
+        <% end %>
       </div>
-      <% if @subscription.trial? %>
-        <div class="shrink-0">
-          <p class="text-xs text-gray-500">Aproveite para cadastrar seus imóveis</p>
-        </div>
-      <% end %>
+      <div class="shrink-0">
+        <%= link_to "Ver assinatura", account_subscription_path,
+              class: "rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+      </div>
     </div>
   </div>
 <% end %>
@@ -52,6 +46,32 @@
       <%= f.telephone_field :phone, required: true, placeholder: "(11) 98765-4321",
             class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none text-sm px-3.5 py-2.5 font-mono" %>
     </div>
+
+    <fieldset class="border-t border-gray-200 pt-4">
+      <legend class="text-sm font-semibold text-gray-900">Dados de cobrança</legend>
+      <p class="mt-1 text-xs text-gray-500">Necessários para emitir a cobrança da assinatura.</p>
+
+      <div class="mt-3 space-y-4">
+        <div>
+          <%= f.label :cpf_cnpj, "CPF ou CNPJ", class: "block text-sm font-medium text-gray-700" %>
+          <%= f.text_field :cpf_cnpj, inputmode: "numeric", placeholder: "Somente números",
+                class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none text-sm px-3.5 py-2.5 font-mono" %>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <%= f.label :postal_code, "CEP", class: "block text-sm font-medium text-gray-700" %>
+            <%= f.text_field :postal_code, inputmode: "numeric", placeholder: "00000000",
+                  class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none text-sm px-3.5 py-2.5 font-mono" %>
+          </div>
+          <div>
+            <%= f.label :address_number, "Número", class: "block text-sm font-medium text-gray-700" %>
+            <%= f.text_field :address_number,
+                  class: "mt-1.5 w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none text-sm px-3.5 py-2.5" %>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
     <div class="pt-2">
       <%= f.submit "Salvar alterações", class: "rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 active:bg-gray-950 cursor-pointer" %>
     </div>

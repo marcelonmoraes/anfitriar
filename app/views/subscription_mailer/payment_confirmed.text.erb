@@ -1,0 +1,11 @@
+Olá, <%= @host.name %>!
+
+Recebemos o pagamento do seu plano <%= @subscription.plan.name %> e sua assinatura segue ativa.
+
+<% if @subscription.current_period_end %>
+Próxima cobrança: <%= l @subscription.current_period_end.to_date, format: :long %>
+<% end %>
+
+Ver minha assinatura: <%= account_subscription_url %>
+
+Equipe Anfitriar

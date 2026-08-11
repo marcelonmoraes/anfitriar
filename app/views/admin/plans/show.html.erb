@@ -14,19 +14,19 @@
 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
   <div class="rounded-xl border border-gray-200 bg-white p-5">
     <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Mensal</p>
-    <p class="mt-1 text-2xl font-bold text-gray-900"><%= number_to_currency(@plan.monthly_price_cents / 100.0, unit: "R$ ", separator: ",", delimiter: ".") %></p>
+    <p class="mt-1 text-2xl font-bold text-gray-900"><%= number_to_currency(@plan.monthly_price_cents / 100.0) %></p>
   </div>
   <div class="rounded-xl border border-gray-200 bg-white p-5">
     <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Trimestral</p>
-    <p class="mt-1 text-2xl font-bold text-gray-900"><%= number_to_currency(@plan.quarterly_price_cents / 100.0, unit: "R$ ", separator: ",", delimiter: ".") %></p>
+    <p class="mt-1 text-2xl font-bold text-gray-900"><%= number_to_currency(@plan.quarterly_price_cents / 100.0) %></p>
   </div>
   <div class="rounded-xl border border-gray-200 bg-white p-5">
     <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Semestral</p>
-    <p class="mt-1 text-2xl font-bold text-gray-900"><%= number_to_currency(@plan.semiannual_price_cents / 100.0, unit: "R$ ", separator: ",", delimiter: ".") %></p>
+    <p class="mt-1 text-2xl font-bold text-gray-900"><%= number_to_currency(@plan.semiannual_price_cents / 100.0) %></p>
   </div>
   <div class="rounded-xl border border-gray-200 bg-white p-5">
     <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Anual</p>
-    <p class="mt-1 text-2xl font-bold text-gray-900"><%= number_to_currency(@plan.annual_price_cents / 100.0, unit: "R$ ", separator: ",", delimiter: ".") %></p>
+    <p class="mt-1 text-2xl font-bold text-gray-900"><%= number_to_currency(@plan.annual_price_cents / 100.0) %></p>
   </div>
 </div>
 

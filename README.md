@@ -1,24 +1,49 @@
-# README
+# Anfitriar
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Guias digitais para anfitriões de hospedagem.
 
-Things you may want to cover:
+## Requisitos
 
-* Ruby version
+* Ruby (ver `.ruby-version`)
+* PostgreSQL
 
-* System dependencies
+## Configuração
 
-* Configuration
+```bash
+bin/setup
+bin/rails db:seed
+bin/dev
+```
 
-* Database creation
+## Variáveis de ambiente
 
-* Database initialization
+Em desenvolvimento, copie o modelo e preencha:
 
-* How to run the test suite
+```bash
+cp .env.example .env
+```
 
-* Services (job queues, cache servers, search engines, etc.)
+O `.env` é ignorado pelo Git. Em produção, defina as variáveis no servidor.
 
-* Deployment instructions
+### Integração Asaas (assinaturas)
 
-* ...
+| Variável | Obrigatória | Descrição |
+|---|---|---|
+| `ASAAS_API_KEY` | sim | Chave de API. **Somente backend** — nunca exposta em views ou JS. |
+| `ASAAS_WEBHOOK_SECRET` | sim | Token de autenticação configurado no webhook do painel Asaas. Recebido no header `asaas-access-token`. |
+| `ASAAS_ENVIRONMENT` | não | `production` usa a API real; qualquer outro valor usa o sandbox. Por padrão segue o `RAILS_ENV`. |
+
+O webhook deve apontar para `POST /webhooks/asaas` com os eventos
+`PAYMENT_CONFIRMED`, `PAYMENT_RECEIVED`, `PAYMENT_OVERDUE`, `PAYMENT_REFUNDED`,
+`SUBSCRIPTION_CREATED`, `SUBSCRIPTION_UPDATED` e `SUBSCRIPTION_DELETED`.
+
+As notificações do Asaas são desativadas por cliente (`notificationDisabled`):
+toda comunicação com o anfitrião sai pela plataforma via `SubscriptionMailer`.
+
+## Testes
+
+```bash
+bundle exec rspec
+bundle exec rubocop
+bundle exec brakeman
+```

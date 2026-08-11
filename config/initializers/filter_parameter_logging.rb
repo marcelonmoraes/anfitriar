@@ -5,5 +5,7 @@
 # See the ActiveSupport::ParameterFilter documentation for supported notations and behaviors.
 Rails.application.config.filter_parameters += [
   :passw, :email, :secret, :token, :_key, :crypt, :salt, :certificate, :otp, :ssn, :cvv, :cvc,
-  :cpf, :phone, :access_token
+  :cpf, :phone, :access_token,
+  # Dados de cartão: nunca devem chegar ao log, nem parcialmente.
+  :number, :ccv, :expiry, :creditCard, :cpf_cnpj, :cpfCnpj, :holder_name
 ]
