@@ -36,6 +36,8 @@ gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 2.0"
+# A partir do image_processing 2.0 o backend não é mais uma dependência do gem
+gem "ruby-vips", "~> 2.0"
 
 # Rich text content [https://guides.rubyonrails.org/action_text_overview.html]
 gem "actiontext"
