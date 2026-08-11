@@ -37,21 +37,21 @@ end
 
 ### 2.2 Model `Booking`
 
-Atributo virtual `total_price` (string) + callback para conversão:
+Reader e writer que traduzem entre reais (formulário) e centavos (banco). Sem callback, sem `attribute` virtual:
 
 ```ruby
 # app/models/booking.rb
-attribute :total_price, :string
-
-before_save :set_total_price_cents
-
 def total_price
-  super.presence || (total_price_cents / 100.0).to_s
+  format("%.2f", total_price_cents / 100.0)
 end
 
-def set_total_price_cents
-  return if self[:total_price].blank?
-  self.total_price_cents = self[:total_price].gsub(/[^\d,\.]/, "").tr(",", ".").to_f.*(100).to_i
+def total_price=(value)
+  digits = value.to_s.gsub(/[^\d,.]/, "").tr(",", ".")
+  self.total_price_cents = digits.blank? ? 0 : (digits.to_f * 100).round
+end
+
+def nights
+  (check_out - check_in).to_i
 end
 ```
 
@@ -59,41 +59,58 @@ end
 
 ### 2.3 Query Methods (KPIs)
 
+Duas formas de recortar reservas por período, com propósitos diferentes:
+
+- **`within_range`** (por `check_in`) — usado para **receita**: o valor da reserva é atribuído à data de check-in
+- **`overlapping`** — usado para **ocupação**: uma reserva que atravessa a borda do período conta apenas as noites dentro dele
+
 ```ruby
 # app/models/booking.rb
-scope :within_range, ->(range) { where(check_in: range) }
 scope :active, -> { where(revoked_at: nil) }
+scope :within_range, ->(start_date, end_date) { where(check_in: start_date..end_date) }
+scope :overlapping, ->(start_date, end_date) {
+  where(check_in: ..end_date).where(check_out: start_date..)
+}
+
+# Noites ocupadas dentro do período, recortadas nas bordas.
+def self.booked_nights(start_date, end_date)
+  active.overlapping(start_date, end_date).sum do |booking|
+    first_night = [ booking.check_in, start_date ].max
+    last_night = [ booking.check_out, end_date + 1 ].min
+    [ (last_night - first_night).to_i, 0 ].max
+  end
+end
+
+def self.available_nights(start_date, end_date, properties_count)
+  properties_count * ((end_date - start_date).to_i + 1)
+end
 
 def self.revenue_in_range(start_date, end_date)
-  active.within_range(start_date..end_date).sum(:total_price_cents)
+  active.within_range(start_date, end_date).sum(:total_price_cents)
 end
 
 def self.occupancy_rate(start_date, end_date, properties_count)
-  total_available_nights = properties_count * (end_date - start_date).to_i
-  return 0 if total_available_nights.zero?
+  capacity = available_nights(start_date, end_date, properties_count)
+  return 0.0 if capacity.zero?
 
-  booked_nights = active.within_range(start_date..end_date).sum do |booking|
-    nights = (booking.check_out - booking.check_in).to_i
-    [nights, 0].max
-  end
-
-  (booked_nights.to_f / total_available_nights * 100).round(1)
+  (booked_nights(start_date, end_date).to_f / capacity * 100).round(1)
 end
 
-def self.adr(start_date, end_date)  # Average Daily Rate
-  bookings = active.within_range(start_date..end_date).where("total_price_cents > 0")
-  nights = bookings.sum { |b| (b.check_out - b.check_in).to_i }
-  return 0 if nights.zero?
+# Average Daily Rate: receita por noite efetivamente vendida.
+def self.adr(start_date, end_date)
+  priced = active.within_range(start_date, end_date).where("total_price_cents > 0")
+  sold_nights = priced.sum(&:nights)
+  return 0.0 if sold_nights.zero?
 
-  bookings.sum(:total_price_cents).to_f / nights / 100
+  (priced.sum(:total_price_cents).to_f / sold_nights / 100).round(2)
 end
 
-def self.revpar(start_date, end_date, properties_count)  # Revenue Per Available Room
-  total_available_nights = properties_count * (end_date - start_date).to_i
-  return 0 if total_available_nights.zero?
+# Revenue Per Available Room: receita por noite disponível.
+def self.revpar(start_date, end_date, properties_count)
+  capacity = available_nights(start_date, end_date, properties_count)
+  return 0.0 if capacity.zero?
 
-  revenue = revenue_in_range(start_date, end_date).to_f / 100
-  revenue / total_available_nights
+  (revenue_in_range(start_date, end_date).to_f / 100 / capacity).round(2)
 end
 ```
 
@@ -103,23 +120,49 @@ end
 
 Campo no formulário: input text com label "Preço total da reserva (R$)", placeholder "Ex: 1.200,00", opcional.
 
-### 2.5 Agregações por período (groupdate)
+### 2.5 Agregações por período
+
+Séries temporais calculadas em Ruby, sem dependência da gem `groupdate`. A ocupação precisa distribuir noites por dia (uma reserva ocupa vários dias), o que `GROUP BY` não resolve sozinho — e a mesma estrutura de buckets serve para receita.
 
 ```ruby
 # app/models/booking.rb
-def self.revenue_by_period(start_date, end_date, group_unit)
-  active.within_range(start_date..end_date)
-    .group_by_period(group_unit, :check_in)
-    .sum(:total_price_cents)
+def self.bucket_key(date, group_unit)
+  case group_unit
+  when :day then date
+  when :week then date.beginning_of_week
+  else date.beginning_of_month
+  end
 end
 
-def self.occupancy_by_period(start_date, end_date, group_unit, properties_count)
-  return {} if properties_count.zero?
+def self.revenue_series(start_date, end_date, group_unit)
+  buckets = {}
+  (start_date..end_date).each { |date| buckets[bucket_key(date, group_unit)] ||= 0 }
 
-  active.within_range(start_date..end_date)
-    .group_by_period(group_unit, :check_in)
-    .count
-    .transform_values { |count| (count.to_f / properties_count * 100).round(1) }
+  active.within_range(start_date..end_date).each do |booking|
+    buckets[bucket_key(booking.check_in, group_unit)] += booking.total_price_cents
+  end
+
+  buckets
+end
+
+def self.occupancy_series(start_date, end_date, group_unit, properties_count)
+  nights_per_day = Hash.new(0)
+  active.within_range(start_date..end_date).each do |booking|
+    (booking.check_in...booking.check_out).each { |date| nights_per_day[date] += 1 }
+  end
+
+  buckets = {}
+  (start_date..end_date).each do |date|
+    key = bucket_key(date, group_unit)
+    buckets[key] ||= { nights: 0, days: 0 }
+    buckets[key][:nights] += nights_per_day[date]
+    buckets[key][:days] += 1
+  end
+
+  buckets.transform_values do |data|
+    capacity = data[:days] * properties_count
+    capacity.zero? ? 0.0 : (data[:nights].to_f / capacity * 100).round(1)
+  end
 end
 ```
 
@@ -136,64 +179,103 @@ end
 
 Novo `DashboardController` herda de `ApplicationController`:
 
+O cálculo das métricas vive em `Dashboard::Metrics`, um PORO em `app/models/dashboard/metrics.rb`. O controller só resolve período, delega e monta a timeline.
+
 ```ruby
-# app/controllers/dashboard_controller.rb
-class DashboardController < ApplicationController
+# app/models/dashboard/metrics.rb
+class Dashboard::Metrics
   PERIODS = %w[7d 30d 90d 12m year].freeze
   DEFAULT_PERIOD = "30d".freeze
 
-  def show
-    @period = PERIODS.include?(params[:period]) ? params[:period] : DEFAULT_PERIOD
-    @date_range = calculate_date_range(@period)
-    @group_unit = determine_group_unit(@period)
-    @properties_count = Current.host.properties.count
+  attr_reader :period, :date_range, :group_unit
 
-    return redirect_to properties_path if @properties_count.zero?
+  def initialize(host, period)
+    @host = host
+    @period = PERIODS.include?(period) ? period : DEFAULT_PERIOD
+    @date_range = build_date_range
+    @group_unit = build_group_unit
+  end
 
-    bookings = Current.host.bookings
+  def properties_count
+    @properties_count ||= @host.properties.count
+  end
 
-    @kpi_metrics = {
-      occupancy: bookings.occupancy_rate(@date_range.begin, @date_range.end, @properties_count),
-      revenue: bookings.revenue_in_range(@date_range.begin, @date_range.end),
-      adr: bookings.adr(@date_range.begin, @date_range.end),
-      revpar: bookings.revpar(@date_range.begin, @date_range.end, @properties_count)
+  def kpis
+    @kpis ||= {
+      occupancy: bookings.occupancy_rate(starts_on, ends_on, properties_count),
+      revenue: bookings.revenue_in_range(starts_on, ends_on),
+      adr: bookings.adr(starts_on, ends_on),
+      revpar: bookings.revpar(starts_on, ends_on, properties_count)
     }
+  end
 
-    @chart_data = {
-      revenue: bookings.revenue_by_period(@date_range.begin, @date_range.end, @group_unit),
-      occupancy: bookings.occupancy_by_period(@date_range.begin, @date_range.end, @group_unit, @properties_count)
+  def series
+    @series ||= {
+      revenue: bookings.revenue_series(starts_on, ends_on, group_unit),
+      occupancy: bookings.occupancy_series(starts_on, ends_on, group_unit, properties_count)
     }
+  end
 
-    load_timeline
+  # Receita do período imediatamente anterior, de mesmo tamanho, para a variação %.
+  def previous_revenue
+    span = (ends_on - starts_on).to_i + 1
+    bookings.revenue_in_range(starts_on - span, starts_on - 1)
+  end
+
+  def revenue_change_percentage
+    return nil if previous_revenue.zero?
+
+    ((kpis[:revenue] - previous_revenue).to_f / previous_revenue * 100).round(1)
   end
 
   private
 
-  def load_timeline
-    scoped = Current.host.bookings.includes(:property, :guest)
-    @today_checkins = scoped.where(check_in: Date.current)
-    @today_checkouts = scoped.where(check_out: Date.current)
-    @tomorrow_checkins = scoped.where(check_in: Date.current + 1)
-    @tomorrow_checkouts = scoped.where(check_out: Date.current + 1)
-  end
+  def bookings = @host.bookings
+  def starts_on = date_range.begin
+  def ends_on = date_range.end
 
-  def calculate_date_range(period)
-    case period
-    when "7d" then 7.days.ago.to_date..Date.current
-    when "30d" then 30.days.ago.to_date..Date.current
-    when "90d" then 90.days.ago.to_date..Date.current
+  def build_date_range
+    case @period
+    when "7d" then 6.days.ago.to_date..Date.current
+    when "30d" then 29.days.ago.to_date..Date.current
+    when "90d" then 89.days.ago.to_date..Date.current
     when "12m" then 12.months.ago.to_date..Date.current
     when "year" then Date.current.beginning_of_year..Date.current.end_of_year
     end
   end
 
-  def determine_group_unit(period)
-    case period
+  def build_group_unit
+    case @period
     when "7d", "30d" then :day
     when "90d" then :week
     else :month
     end
   end
+end
+```
+
+```ruby
+# app/controllers/dashboard_controller.rb
+class DashboardController < ApplicationController
+  TABS = %w[occupancy revenue adr revpar].freeze
+
+  def show
+    @metrics = Dashboard::Metrics.new(Current.host, params[:period])
+    @tab = TABS.include?(params[:tab]) ? params[:tab] : "occupancy"
+
+    return redirect_to properties_path if @metrics.properties_count.zero?
+
+    load_timeline
+  end
+
+  private
+    def load_timeline
+      scoped = Current.host.bookings.includes(:property, :guest)
+      @today_checkins = scoped.where(check_in: Date.current)
+      @today_checkouts = scoped.where(check_out: Date.current)
+      @tomorrow_checkins = scoped.where(check_in: Date.current + 1)
+      @tomorrow_checkouts = scoped.where(check_out: Date.current + 1)
+    end
 end
 ```
 
@@ -203,20 +285,27 @@ O seletor de período e as tabs de performance vivem dentro de um `turbo_frame_t
 
 ```ruby
 # config/routes.rb
-root to: "dashboard#show"
+root "dashboard#show"
 get "dashboard", to: "dashboard#show", as: :dashboard
 # Properties#index deixa de ser root, continua acessível em /properties
 ```
 
-### 3.3 Gems/Dependências
+`root_path` continua sendo o destino pós-login (`after_authentication_url` usa `root_url`), então os specs de autenticação e cadastro que fazem `get root_path` seguem passando — desde que o host tenha propriedade cadastrada ou o redirect para `properties_path` seja esperado.
 
-- **`groupdate`** — agrupar reservas por dia/semana/mês no PostgreSQL
-- **ApexCharts** (JS) — via importmap, sem gem Ruby intermediária:
+### 3.3 Dependências
+
+Apenas **ApexCharts** (JS), via importmap com download local para `vendor/javascript` (padrão já usado pelo `sortablejs`, e exigido pela CSP `default_src :self`):
+
+```bash
+bin/importmap pin apexcharts --download
+```
 
 ```ruby
 # config/importmap.rb
-pin "apexcharts", to: "https://cdn.jsdelivr.net/npm/apexcharts@3.52.0/dist/apexcharts.esm.js"
+pin "apexcharts" # @3.54.1
 ```
+
+Nenhuma gem nova. As séries temporais são calculadas em Ruby (seção 2.5).
 
 ---
 
@@ -326,46 +415,54 @@ Tabela HTML `<table>` com os mesmos dados do gráfico, renderizada no servidor e
 ### 7.1 Model Tests (spec/models/booking_spec.rb)
 
 - `total_price_cents` default 0
-- `total_price` setter converte string formatada → cents
-- `total_price` getter lê cents → decimal
-- `revenue_in_range` soma apenas reservas não revogadas no range
-- `occupancy_rate` retorna % e trata division by zero
-- `adr` calcula receita/noites, retorna 0 sem reservas com preço
+- `total_price=` converte string formatada ("R$ 1.200,00") → cents
+- `total_price` lê cents → string com 2 casas
+- `nights` retorna noites da reserva
+- `revenue_in_range` soma apenas reservas não revogadas com check-in no range
+- `booked_nights` recorta reservas que atravessam as bordas do período
+- `occupancy_rate` retorna % e trata `properties_count = 0`
+- `adr` calcula receita/noites vendidas, retorna 0 sem reservas com preço
 - `revpar` calcula receita/noites disponíveis, trata `properties_count = 0`
-- `revenue_by_period` agrupa por dia/semana/mês corretamente (groupdate)
-- `occupancy_by_period` retorna hash com taxa por período
+- `revenue_series` retorna todos os buckets do período, inclusive zerados
+- `occupancy_series` distribui noites por dia e agrupa por dia/semana/mês
+
+### 7.1b Metrics Tests (spec/models/dashboard/metrics_spec.rb)
+
+- Período inválido cai para `30d`
+- Cada período produz o `date_range` e `group_unit` esperados
+- `revenue_change_percentage` compara com período anterior de mesmo tamanho
+- `revenue_change_percentage` retorna `nil` quando período anterior é zero
+- KPIs consideram apenas reservas do host
 
 ### 7.2 Request Tests (spec/requests/dashboard_spec.rb)
 
 - GET / sem auth → redirect to login
-- GET / com host autenticado → 200, renderiza `show`
-- KPIs presentes no response (receita, ocupação, adr, revpar)
-- Timeline Hoje/Amanhã com check-ins/outs corretos
+- GET / com host autenticado e propriedade → 200, renderiza `show`
+- KPIs presentes no response (receita, ocupação, ADR, RevPAR)
+- Timeline mostra check-in de hoje com nome do hóspede
+- Timeline mostra empty state quando não há check-in hoje
 - `?period=7d` → KPIs calculados sobre últimos 7 dias
-- `?period=12m` → KPIs calculados sobre últimos 12 meses
 - `?period=year` → KPIs calculados sobre ano atual
 - `?period=invalido` → fallback para 30d
+- `?tab=revenue` → tab de receita marcada como selecionada
+- `?tab=invalido` → fallback para `occupancy`
 - Sem propriedades → redirect para `properties_path`
-- Sem reservas → KPIs mostram 0 / empty state no gráfico
+- Sem reservas → KPIs mostram zero
+- Não vaza reservas de outro anfitrião nos KPIs
 - Request com header `Turbo-Frame: performance` → responde 200 com o frame
 
-### 7.3 System Tests (spec/system/dashboard_spec.rb)
-
-- Anfitrião acessa dashboard e vê 4 KPI cards
-- Anfitrião troca período e o frame de performance atualiza
-- Anfitrião troca tab de performance e gráfico correspondente aparece
-- Anfitrião com check-in hoje vê bloco "Hoje" com nome do hóspede
-- Anfitrião sem reservas hoje vê empty state "Nenhum check-in previsto"
-- Criar reserva com preço → KPI receita reflete valor
-
-### 7.4 Factories
+### 7.3 Factories
 
 ```ruby
 # spec/factories/bookings.rb (adicionar trait)
 trait :priced do
-  total_price_cents { rand(50_00..500_00) }  # R$ 50 a R$ 500
+  total_price_cents { 30_000 }  # R$ 300,00
 end
 ```
+
+### 7.4 Sem system tests
+
+O projeto não tem infraestrutura de system test configurada (Capybara está no Gemfile mas não há `spec/system/` nem driver). Montar essa infra está fora do escopo deste subprojeto. A cobertura de request specs valida markup, dados e navegação por Turbo Frame; a renderização do ApexCharts é verificada manualmente.
 
 ---
 
@@ -373,8 +470,8 @@ end
 
 - Eager loading: `includes(:property, :guest)` em todas as queries de timeline
 - Meta: tempo de resposta < 200ms com 100 propriedades + 1000 reservas
-- Groupdate + PostgreSQL: agregações no banco, não na aplicação
-- `occupancy_rate` e `adr` iteram em Ruby por precisarem de diferença de datas por reserva; aceitável no volume alvo. Se virar gargalo, migrar para SQL com `SUM(check_out - check_in)`
+- `revenue_in_range` agrega no banco (`SUM`). As demais métricas iteram em Ruby porque precisam recortar noites por reserva — cada uma carrega apenas as reservas do período, não a tabela inteira
+- Se virar gargalo no futuro, migrar `booked_nights` para SQL com `SUM(LEAST(check_out, :ends) - GREATEST(check_in, :starts))`
 
 ---
 
@@ -395,26 +492,32 @@ end
 | Arquivo | Descrição |
 |---------|-----------|
 | `db/migrate/2026XXXX_add_total_price_cents_to_bookings.rb` | Migration |
+| `app/models/dashboard/metrics.rb` | PORO que resolve período e monta KPIs/séries |
 | `app/controllers/dashboard_controller.rb` | Controller do dashboard |
+| `app/helpers/dashboard_helper.rb` | Formatação de moeda/percentual e classes de badge |
 | `app/views/dashboard/show.html.erb` | View principal |
 | `app/views/dashboard/_kpi_cards.html.erb` | Partial dos 4 cards KPI |
 | `app/views/dashboard/_hero_chart.html.erb` | Partial do gráfico hero |
 | `app/views/dashboard/_timeline.html.erb` | Partial da timeline Hoje/Amanhã |
+| `app/views/dashboard/_day.html.erb` | Partial de um dia da timeline (Hoje/Amanhã) |
 | `app/views/dashboard/_performance.html.erb` | Turbo frame com tabs e seletor de período |
 | `app/javascript/controllers/dashboard_charts_controller.js` | Stimulus controller para ApexCharts |
+| `vendor/javascript/apexcharts.js` | ApexCharts baixado via `bin/importmap` |
+| `spec/models/dashboard/metrics_spec.rb` | Testes do PORO de métricas |
 | `spec/requests/dashboard_spec.rb` | Request tests |
-| `spec/system/dashboard_spec.rb` | System tests |
 
 ### Arquivos modificados
 | Arquivo | Modificação |
 |---------|-------------|
-| `app/models/booking.rb` | Adicionar `total_price`, callbacks e query methods |
-| `app/controllers/bookings_controller.rb` | Adicionar `total_price` ao `booking_params` |
+| `app/models/booking.rb` | Adicionar `total_price`, `nights`, scopes e métodos de KPI/série |
+| `app/controllers/bookings_controller.rb` | Adicionar `total_price` ao `booking_attributes` |
 | `app/views/bookings/_form.html.erb` | Adicionar campo de preço |
 | `app/views/bookings/show.html.erb` | Exibir preço da reserva |
-| `config/routes.rb` | `root to: "dashboard#show"` + rota `/dashboard` |
+| `app/views/layouts/_nav.html.erb` | Adicionar link "Painel" (desktop e mobile) |
+| `config/routes.rb` | `root "dashboard#show"` + rota `/dashboard` |
 | `config/importmap.rb` | Pin ApexCharts |
-| `Gemfile` | Adicionar `groupdate` |
-| `config/locales/pt-BR.yml` | Labels do dashboard e campo de preço |
-| `spec/models/booking_spec.rb` | Testes de KPIs |
+| `config/locales/pt-BR.yml` | Labels do dashboard e do campo de preço |
+| `spec/models/booking_spec.rb` | Testes de preço e KPIs |
+| `spec/requests/authentication_spec.rb` | Ajustar expectativa de `get root_path` |
+| `spec/requests/registrations_spec.rb` | Ajustar expectativa de `get root_path` |
 | `spec/factories/bookings.rb` | Adicionar trait `:priced` |
