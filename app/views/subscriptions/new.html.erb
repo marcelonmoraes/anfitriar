@@ -83,10 +83,9 @@
           </label>
         </fieldset>
 
-        <div class="mt-5 border-t border-gray-200 pt-5">
-      <% else %>
-        <div class="mt-4">
       <% end %>
+
+      <div class="<%= @credit_cards.any? ? "mt-5 border-t border-gray-200 pt-5" : "mt-4" %>">
         <%= fields_for :credit_card, @credit_card_form do |card_fields| %>
           <%= render "credit_cards/fields", form: card_fields %>
         <% end %>

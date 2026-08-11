@@ -46,6 +46,22 @@ pt-BR:
     defaults:
       create:
         created: "Cartão definido como padrão."
+  credit_card_form:
+    placeholders:
+      number: "0000 0000 0000 0000"
+      expiry: "MM/AA"
+      cvv: "123"
+      document: "Somente se diferente do seu cadastro"
+  activemodel:
+    models:
+      credit_card_form: "Cartão"
+    attributes:
+      credit_card_form:
+        holder_name: "Nome impresso no cartão"
+        number: "Número do cartão"
+        expiry: "Validade"
+        cvv: "CVV"
+        document: "CPF/CNPJ do titular"
   activerecord:
     models:
       host: "Anfitrião"
@@ -57,7 +73,6 @@ pt-BR:
       plan: "Plano"
       subscription: "Assinatura"
       credit_card: "Cartão"
-      credit_card_form: "Cartão"
     attributes:
       host:
         name: "Nome"
@@ -68,18 +83,6 @@ pt-BR:
         cpf_cnpj: "CPF/CNPJ"
         postal_code: "CEP"
         address_number: "Número"
-      credit_card_form:
-        holder_name: "Nome impresso no cartão"
-        number: "Número do cartão"
-        expiry: "Validade"
-        cvv: "CVV"
-        document: "CPF/CNPJ do titular"
-      credit_card_form:
-        placeholders:
-          number: "0000 0000 0000 0000"
-          expiry: "MM/AA"
-          cvv: "123"
-          document: "Somente se diferente do seu cadastro"
       subscription:
         plan: "Plano"
         plan_id: "Plano"
